@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranowin Enterprises | Baby Bags</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Top app bar ===== -->
+  <header class="topbar">
+    <div class="logo-mark" aria-hidden="true">R</div>
+    <div class="topbar-text">
+      <h1 class="topbar-title">Ranowin Enterprises</h1>
+      <p class="topbar-subtitle">Baby bags, made simple</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <h2 class="hero-headline">Bags built for the newborn years.</h2>
+      <p class="hero-sub">Soft-structured, easy-clean baby bags designed for hospital trips, daily outings, and everything a new parent carries.</p>
+      <ul class="pill-row" role="list">
+        <li class="pill">
+          <svg viewBox="0 0 24 24" class="pill-icon" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
+          Water-resistant lining
+        </li>
+        <li class="pill">
+          <svg viewBox="0 0 24 24" class="pill-icon" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
+          Multiple compartments
+        </li>
+        <li class="pill">
+          <svg viewBox="0 0 24 24" class="pill-icon" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
+          Adjustable straps
+        </li>
+      </ul>
+    </section>
+
+    <!-- ===== Product gallery ===== -->
+    <section class="shop" id="shop">
+      <div class="section-header">
+        <h2 class="section-title">Our bags</h2>
+        <span class="section-count">15 styles</span>
+      </div>
+
+      <div class="grid">
+
+        <!-- ===================================================
+             PRODUCT CARD — duplicate this whole <article> block
+             for each of the 15 bags. Just change:
+               - the text inside .card-name
+               - the text inside .card-price
+               - the href on .order-btn (or leave the shared
+                 [TALLY_FORM_LINK] placeholder for all of them)
+             =================================================== -->
+        <article class="card">
+          <div class="card-image">
+            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
+              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Bag Model 001</h3>
+            <p class="card-price">Rs. 1,800</p>
+            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
+              Order now
+            </a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image card-image--alt">
+            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
+              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Bag Model 002</h3>
+            <p class="card-price">Rs. 2,200</p>
+            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
+              Order now
+            </a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image">
+            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
+              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Bag Model 003</h3>
+            <p class="card-price">Rs. 1,950</p>
+            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
+              Order now
+            </a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-image card-image--alt">
+            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
+              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">Bag Model 004</h3>
+            <p class="card-price">Rs. 2,450</p>
+            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
+              Order now
+            </a>
+          </div>
+        </article>
+        <!-- ===== end product card pattern ===== -->
+
+      </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section class="about" id="about">
+      <h2 class="section-title">About Ranowin</h2>
+      <p class="about-text">Ranowin Enterprises is a small, home-based business in Pannipitiya, making baby bags for parents across Sri Lanka. Every bag is checked by hand before it ships.</p>
+      <ul class="value-list" role="list">
+        <li><span class="value-dot"></span>Handmade in small batches</li>
+        <li><span class="value-dot"></span>Checked for stitching and zips before dispatch</li>
+        <li><span class="value-dot"></span>Island-wide delivery</li>
+      </ul>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section class="contact" id="contact">
+      <h2 class="section-title">Get in touch</h2>
+      <p class="about-text">Have a question about a bag, or want a custom colour? Reach out directly.</p>
+      <div class="contact-actions">
+        <a class="contact-btn" href="[WHATSAPP_LINK]" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" class="contact-icon" aria-hidden="true"><path d="M4 5h16v10H8l-4 4V5Z"/></svg>
+          Message on WhatsApp
+        </a>
+        <a class="contact-btn contact-btn--ghost" href="mailto:[EMAIL_ADDRESS]">
+          <svg viewBox="0 0 24 24" class="contact-icon" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+          Email us
+        </a>
+      </div>
+      <p class="location-text">Pannipitiya, Sri Lanka</p>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Ranowin Enterprises</p>
+  </footer>
+
+  <!-- ===== Bottom app-style tab bar ===== -->
+  <nav class="tabbar" aria-label="Primary">
+    <a class="tab active" href="#shop">
+      <svg viewBox="0 0 24 24" class="tab-icon" aria-hidden="true">
+        <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+        <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+      </svg>
+      Shop
+    </a>
+    <a class="tab" href="#about">
+      <svg viewBox="0 0 24 24" class="tab-icon" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/>
+        <line x1="12" y1="10.5" x2="12" y2="16"/>
+        <circle cx="12" cy="7.6" r="0.9" fill="currentColor" stroke="none"/>
+      </svg>
+      About
+    </a>
+    <a class="tab" href="#contact">
+      <svg viewBox="0 0 24 24" class="tab-icon" aria-hidden="true"><path d="M4 5h16v10H8l-4 4V5Z"/></svg>
+      Contact
+    </a>
+  </nav>
+
+</div>
+
+</body>
+</html>
