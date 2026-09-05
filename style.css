@@ -1,0 +1,460 @@
+/* ==========================================================
+   Ranowin Enterprises — design tokens
+   A "botanical nursery" palette: sage green + dusty clay pink,
+   built for a mobile app-like feel (Glide-style).
+   ========================================================== */
+:root {
+  --bg: #F3F6F1;
+  --surface: #FFFFFF;
+  --ink: #26302A;
+  --ink-muted: #6E7A72;
+  --accent: #5F8768;
+  --accent-deep: #43614A;
+  --accent-warm: #E3A9A0;
+  --line: #E4E7E2;
+  --shadow-rgb: 38, 48, 42;
+}
+
+* , *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: 'Baloo 2', 'Inter', sans-serif;
+  margin: 0;
+}
+
+p, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+svg { display: block; }
+
+/* Focus visibility for keyboard users */
+a:focus-visible {
+  outline: 2px solid var(--accent-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ==========================================================
+   App shell
+   Mobile: natural full-width page.
+   Desktop (≥641px): centred phone-style frame, matching how
+   Glide apps preview on a larger screen.
+   ========================================================== */
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg);
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding-bottom: 88px; /* keeps content clear of the sticky tab bar */
+}
+
+@media (min-width: 641px) {
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(160deg, #EEF1EA, #E1E5DC);
+  }
+
+  .app {
+    width: 420px;
+    height: 860px;
+    max-height: 90vh;
+    border-radius: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    box-shadow:
+      0 40px 80px -30px rgba(var(--shadow-rgb), 0.35),
+      0 0 0 10px #ffffff,
+      0 0 0 11px var(--line);
+    scrollbar-width: none;
+  }
+
+  .app::-webkit-scrollbar { display: none; }
+}
+
+/* ==========================================================
+   Top app bar
+   ========================================================== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(243, 246, 241, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.logo-mark {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.topbar-subtitle {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  margin-top: 1px;
+}
+
+/* ==========================================================
+   Hero
+   ========================================================== */
+.hero {
+  padding: 24px 20px 8px;
+}
+
+.hero-headline {
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.hero-sub {
+  margin-top: 10px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  max-width: 60ch;
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.pill-icon {
+  width: 13px;
+  height: 13px;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ==========================================================
+   Section headers (shared)
+   ========================================================== */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 26px 20px 12px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.section-count {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.shop .section-header { padding-top: 8px; }
+
+/* ==========================================================
+   Product gallery
+   ========================================================== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 4px 20px 8px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 24px -16px rgba(var(--shadow-rgb), 0.35);
+}
+
+.card-image {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent-warm), var(--accent));
+}
+
+.card-image--alt {
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+}
+
+.card-icon {
+  width: 42%;
+  height: 42%;
+  stroke: rgba(255, 255, 255, 0.9);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card-body {
+  padding: 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-name {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.card-price {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent-deep);
+}
+
+.order-btn {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  box-shadow: 0 10px 18px -10px rgba(67, 97, 74, 0.7);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.order-btn:hover {
+  background: var(--accent-deep);
+  transform: translateY(-1px);
+}
+
+.order-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ==========================================================
+   About
+   ========================================================== */
+.about, .contact {
+  padding: 22px 20px 8px;
+}
+
+.about-text {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  max-width: 62ch;
+}
+
+.value-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.value-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+
+.value-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ==========================================================
+   Contact
+   ========================================================== */
+.contact-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.contact-btn:hover { background: var(--accent-deep); transform: translateY(-1px); }
+
+.contact-btn--ghost {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.contact-btn--ghost:hover { background: var(--bg); }
+
+.contact-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.location-text {
+  margin-top: 14px;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+
+/* ==========================================================
+   Footer
+   ========================================================== */
+.footer {
+  padding: 26px 20px 12px;
+  text-align: center;
+}
+
+.footer p {
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+}
+
+/* ==========================================================
+   Bottom tab bar
+   ========================================================== */
+.tabbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  padding: 9px 0 12px;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 14px;
+}
+
+.tab.active { color: var(--accent-deep); }
+
+.tab-icon {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ==========================================================
+   Small screens — tighten grid gap slightly
+   ========================================================== */
+@media (max-width: 340px) {
+  .grid { gap: 10px; padding-left: 16px; padding-right: 16px; }
+  .hero, .about, .contact, .topbar, .footer, .section-header { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ==========================================================
+   Respect reduced motion preferences
+   ========================================================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
