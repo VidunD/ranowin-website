@@ -6,187 +6,215 @@
 <title>Ranowin Enterprises | Baby Bags</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app">
-
-  <!-- ===== Top app bar ===== -->
-  <header class="topbar">
-    <div class="logo-mark" aria-hidden="true">R</div>
-    <div class="topbar-text">
-      <h1 class="topbar-title">Ranowin Enterprises</h1>
-      <p class="topbar-subtitle">Baby bags, made simple</p>
+<!-- ===================== HEADER ===================== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <h1 class="brand-title">Ranowin Enterprises</h1>
+      <p class="brand-subtitle" data-i18n="brandSubtitle">Baby bags, made simple</p>
     </div>
-  </header>
 
-  <main>
+    <nav class="lang-toggle" aria-label="Language selector">
+      <button type="button" class="lang-btn active" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="si">SI</button>
+      <button type="button" class="lang-btn" data-lang="ta">TA</button>
+    </nav>
+  </div>
+</header>
 
-    <!-- ===== Hero ===== -->
-    <section class="hero">
-      <h2 class="hero-headline">Bags built for the newborn years.</h2>
-      <p class="hero-sub">Soft-structured, easy-clean baby bags designed for hospital trips, daily outings, and everything a new parent carries.</p>
-      <ul class="pill-row" role="list">
-        <li class="pill">
-          <svg viewBox="0 0 24 24" class="pill-icon" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
-          Water-resistant lining
-        </li>
-        <li class="pill">
-          <svg viewBox="0 0 24 24" class="pill-icon" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
-          Multiple compartments
-        </li>
-        <li class="pill">
-          <svg viewBox="0 0 24 24" class="pill-icon" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
-          Adjustable straps
-        </li>
-      </ul>
-    </section>
+<main>
 
-    <!-- ===== Product gallery ===== -->
-    <section class="shop" id="shop">
-      <div class="section-header">
-        <h2 class="section-title">Our bags</h2>
-        <span class="section-count">15 styles</span>
+  <!-- ===================== HERO ===================== -->
+  <section class="hero container">
+    <h2 class="hero-headline" data-i18n="heroHeadline">Bags built for the newborn years.</h2>
+    <p class="hero-sub" data-i18n="heroSub">Soft-structured, easy-clean baby bags designed for hospital trips, daily outings, and everything a new parent carries.</p>
+  </section>
+
+  <!-- ===================== PRODUCT GRID ===================== -->
+  <section class="shop container" id="shop">
+    <h2 class="section-title" data-i18n="sectionOurBags">Our Bags</h2>
+
+    <div class="product-grid">
+
+      <!-- ===================================================
+           PRODUCT CARD — duplicate this whole <article> block
+           for every bag you sell. Just change:
+             - the text inside .product-name
+             - the text inside .product-price
+             - the data-name / data-price on the Order Now button
+                (data-price must be a plain number, no commas)
+           =================================================== -->
+      <article class="product-card">
+        <div class="product-image">
+          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
+            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+          </svg>
+        </div>
+        <div class="product-body">
+          <h3 class="product-name">Bag Model 001</h3>
+          <p class="product-price">Rs. 1,800</p>
+          <button type="button" class="btn-primary order-btn" data-name="Bag Model 001" data-price="1800">
+            <span data-i18n="orderNow">Order Now</span>
+          </button>
+          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <div class="product-image product-image--alt">
+          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
+            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+          </svg>
+        </div>
+        <div class="product-body">
+          <h3 class="product-name">Bag Model 002</h3>
+          <p class="product-price">Rs. 2,200</p>
+          <button type="button" class="btn-primary order-btn" data-name="Bag Model 002" data-price="2200">
+            <span data-i18n="orderNow">Order Now</span>
+          </button>
+          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <div class="product-image">
+          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
+            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+          </svg>
+        </div>
+        <div class="product-body">
+          <h3 class="product-name">Bag Model 003</h3>
+          <p class="product-price">Rs. 1,950</p>
+          <button type="button" class="btn-primary order-btn" data-name="Bag Model 003" data-price="1950">
+            <span data-i18n="orderNow">Order Now</span>
+          </button>
+          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <div class="product-image product-image--alt">
+          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
+            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+          </svg>
+        </div>
+        <div class="product-body">
+          <h3 class="product-name">Bag Model 004</h3>
+          <p class="product-price">Rs. 2,450</p>
+          <button type="button" class="btn-primary order-btn" data-name="Bag Model 004" data-price="2450">
+            <span data-i18n="orderNow">Order Now</span>
+          </button>
+          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <div class="product-image">
+          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
+            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+          </svg>
+        </div>
+        <div class="product-body">
+          <h3 class="product-name">Bag Model 005</h3>
+          <p class="product-price">Rs. 2,000</p>
+          <button type="button" class="btn-primary order-btn" data-name="Bag Model 005" data-price="2000">
+            <span data-i18n="orderNow">Order Now</span>
+          </button>
+          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <div class="product-image product-image--alt">
+          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
+            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
+            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
+          </svg>
+        </div>
+        <div class="product-body">
+          <h3 class="product-name">Bag Model 006</h3>
+          <p class="product-price">Rs. 2,650</p>
+          <button type="button" class="btn-primary order-btn" data-name="Bag Model 006" data-price="2650">
+            <span data-i18n="orderNow">Order Now</span>
+          </button>
+          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
+        </div>
+      </article>
+      <!-- ===== end product card pattern ===== -->
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <p data-i18n="footerText">© 2026 Ranowin Enterprises</p>
+</footer>
+
+<!-- ===================== CHECKOUT MODAL ===================== -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+
+    <h2 id="modalTitle" data-i18n="modalTitle">Complete Your Order</h2>
+    <p class="modal-summary" id="modalSummary"></p>
+
+    <form id="orderForm" novalidate>
+
+      <div class="field">
+        <label for="custName" data-i18n="labelName">Name</label>
+        <input type="text" id="custName" name="name" required
+               data-i18n-placeholder="placeholderName" placeholder="Your full name">
+        <span class="error-text" id="err-name"></span>
       </div>
 
-      <div class="grid">
-
-        <!-- ===================================================
-             PRODUCT CARD — duplicate this whole <article> block
-             for each of the 15 bags. Just change:
-               - the text inside .card-name
-               - the text inside .card-price
-               - the href on .order-btn (or leave the shared
-                 [TALLY_FORM_LINK] placeholder for all of them)
-             =================================================== -->
-        <article class="card">
-          <div class="card-image">
-            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
-              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3 class="card-name">Bag Model 001</h3>
-            <p class="card-price">Rs. 1,800</p>
-            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
-              Order now
-            </a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-image card-image--alt">
-            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
-              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3 class="card-name">Bag Model 002</h3>
-            <p class="card-price">Rs. 2,200</p>
-            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
-              Order now
-            </a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-image">
-            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
-              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3 class="card-name">Bag Model 003</h3>
-            <p class="card-price">Rs. 1,950</p>
-            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
-              Order now
-            </a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-image card-image--alt">
-            <svg viewBox="0 0 24 24" class="card-icon" aria-hidden="true">
-              <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-              <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3 class="card-name">Bag Model 004</h3>
-            <p class="card-price">Rs. 2,450</p>
-            <a class="order-btn" href="[TALLY_FORM_LINK]" target="_blank" rel="noopener noreferrer">
-              Order now
-            </a>
-          </div>
-        </article>
-        <!-- ===== end product card pattern ===== -->
-
+      <div class="field">
+        <label for="custAddress" data-i18n="labelAddress">Delivery Address</label>
+        <input type="text" id="custAddress" name="address" required
+               data-i18n-placeholder="placeholderAddress" placeholder="House no, street, city">
+        <span class="error-text" id="err-address"></span>
       </div>
-    </section>
 
-    <!-- ===== About ===== -->
-    <section class="about" id="about">
-      <h2 class="section-title">About Ranowin</h2>
-      <p class="about-text">Ranowin Enterprises is a small, home-based business in Pannipitiya, making baby bags for parents across Sri Lanka. Every bag is checked by hand before it ships.</p>
-      <ul class="value-list" role="list">
-        <li><span class="value-dot"></span>Handmade in small batches</li>
-        <li><span class="value-dot"></span>Checked for stitching and zips before dispatch</li>
-        <li><span class="value-dot"></span>Island-wide delivery</li>
-      </ul>
-    </section>
-
-    <!-- ===== Contact ===== -->
-    <section class="contact" id="contact">
-      <h2 class="section-title">Get in touch</h2>
-      <p class="about-text">Have a question about a bag, or want a custom colour? Reach out directly.</p>
-      <div class="contact-actions">
-        <a class="contact-btn" href="[WHATSAPP_LINK]" target="_blank" rel="noopener noreferrer">
-          <svg viewBox="0 0 24 24" class="contact-icon" aria-hidden="true"><path d="M4 5h16v10H8l-4 4V5Z"/></svg>
-          Message on WhatsApp
-        </a>
-        <a class="contact-btn contact-btn--ghost" href="mailto:[EMAIL_ADDRESS]">
-          <svg viewBox="0 0 24 24" class="contact-icon" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
-          Email us
-        </a>
+      <div class="field">
+        <label for="custPhone" data-i18n="labelPhone">Phone Number</label>
+        <input type="tel" id="custPhone" name="phone" required
+               inputmode="numeric" pattern="[0-9]*" maxlength="10"
+               data-i18n-placeholder="placeholderPhone" placeholder="07XXXXXXXX">
+        <span class="error-text" id="err-phone"></span>
       </div>
-      <p class="location-text">Pannipitiya, Sri Lanka</p>
-    </section>
 
-  </main>
+      <div class="field">
+        <label for="custColor" data-i18n="labelColor">Bag Color</label>
+        <select id="custColor" name="color" required>
+          <option value="" disabled selected data-i18n="selectColor">Select a color</option>
+          <option value="Blue" data-i18n="colorBlue">Blue</option>
+          <option value="Pink" data-i18n="colorPink">Pink</option>
+        </select>
+        <span class="error-text" id="err-color"></span>
+      </div>
 
-  <footer class="footer">
-    <p>&copy; 2026 Ranowin Enterprises</p>
-  </footer>
+      <div class="field">
+        <label for="custNote" data-i18n="labelNote">Special Note (optional)</label>
+        <textarea id="custNote" name="note" rows="3"
+                  data-i18n-placeholder="placeholderNote" placeholder="Anything else we should know?"></textarea>
+      </div>
 
-  <!-- ===== Bottom app-style tab bar ===== -->
-  <nav class="tabbar" aria-label="Primary">
-    <a class="tab active" href="#shop">
-      <svg viewBox="0 0 24 24" class="tab-icon" aria-hidden="true">
-        <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-        <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-      </svg>
-      Shop
-    </a>
-    <a class="tab" href="#about">
-      <svg viewBox="0 0 24 24" class="tab-icon" aria-hidden="true">
-        <circle cx="12" cy="12" r="9"/>
-        <line x1="12" y1="10.5" x2="12" y2="16"/>
-        <circle cx="12" cy="7.6" r="0.9" fill="currentColor" stroke="none"/>
-      </svg>
-      About
-    </a>
-    <a class="tab" href="#contact">
-      <svg viewBox="0 0 24 24" class="tab-icon" aria-hidden="true"><path d="M4 5h16v10H8l-4 4V5Z"/></svg>
-      Contact
-    </a>
-  </nav>
-
+      <button type="submit" class="btn-primary btn-submit" data-i18n="submitBtn">Send Order via WhatsApp</button>
+    </form>
+  </div>
 </div>
 
+<script src="script.js"></script>
 </body>
 </html>
