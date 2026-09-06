@@ -7,26 +7,28 @@
    1. CONFIG — edit these for your business
    ---------------------------------------------------------- */
 
-// TODO: replace with your published Google Sheet CSV link.
-// In Google Sheets: File > Share > Publish to web > select the sheet,
-// choose "Comma-separated values (.csv)", then paste that link here.
-// Expected columns (first row = headers): Name, Price, ImageLink, Status
+// Published Google Sheet CSV link. In Google Sheets: File > Share >
+// Publish to web > select the sheet > "Comma-separated values (.csv)".
+// Expected columns (first row = headers): Name, Price, ImageLink, Status, DeliveryFee
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX3ME8gLubgdcM-QzUKRJ7GO0pabllVpknR11UGFBlOQ5YbCfmNf4rEAdOKTYIgdfi7i5an1Nx-L3K/pub?output=csv';
 
 const WHATSAPP_NUMBER = '94719692801'; // international format, no + and no leading 0
-const DELIVERY_FEE = 350;
 
-// Shown only if the Google Sheet above can't be reached (e.g. while it's
-// still a dummy URL, or if you open index.html directly from disk, where
-// browsers block cross-origin fetches). Replace or remove once your sheet
-// is live — this is just so the page isn't empty during development.
+// Only used if a row's DeliveryFee cell is blank or unreadable — a safety
+// net for messy data, never the value actually charged for a normal row.
+const FALLBACK_DELIVERY_FEE = 350;
+
+// Shown only if the Google Sheet above can't be reached (e.g. a network
+// hiccup, or if you open index.html directly from disk, where browsers
+// block cross-origin fetches). This just keeps the page from looking
+// empty — your real data always wins when the fetch succeeds.
 const FALLBACK_PRODUCTS = [
-  { name: 'Bag Model 001', price: 1800, image: '', status: 'In Stock' },
-  { name: 'Bag Model 002', price: 2200, image: '', status: 'In Stock' },
-  { name: 'Bag Model 003', price: 1950, image: '', status: 'Out of Stock' },
-  { name: 'Bag Model 004', price: 2450, image: '', status: 'In Stock' },
-  { name: 'Bag Model 005', price: 2000, image: '', status: 'In Stock' },
-  { name: 'Bag Model 006', price: 2650, image: '', status: 'Out of Stock' }
+  { name: 'Bag Model 001', price: 1800, image: '', status: 'In Stock', deliveryFee: 350 },
+  { name: 'Bag Model 002', price: 2200, image: '', status: 'In Stock', deliveryFee: 350 },
+  { name: 'Bag Model 003', price: 1950, image: '', status: 'Out of Stock', deliveryFee: 350 },
+  { name: 'Bag Model 004', price: 2450, image: '', status: 'In Stock', deliveryFee: 400 },
+  { name: 'Bag Model 005', price: 2000, image: '', status: 'In Stock', deliveryFee: 350 },
+  { name: 'Bag Model 006', price: 2650, image: '', status: 'Out of Stock', deliveryFee: 400 }
 ];
 
 const BAG_ICON_SVG = `<svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
@@ -221,12 +223,23 @@ function parseCSV(text) {
 }
 
 function normalizeProducts(rawRows) {
-  return rawRows.map((r) => ({
-    name: r.Name || 'Unnamed Bag',
-    price: parseFloat(String(r.Price || '').replace(/[^0-9.]/g, '')) || 0,
-    image: r.ImageLink || '',
-    status: (r.Status || 'In Stock').trim()
-  }));
+  return rawRows.map((r) => {
+    const hasDeliveryFee = r.DeliveryFee !== undefined && String(r.DeliveryFee).trim() !== '';
+    const parsedDeliveryFee = parseFloat(String(r.DeliveryFee || '').replace(/[^0-9.]/g, ''));
+    const deliveryFee = hasDeliveryFee && !Number.isNaN(parsedDeliveryFee) ? parsedDeliveryFee : FALLBACK_DELIVERY_FEE;
+
+    if (!hasDeliveryFee || Number.isNaN(parsedDeliveryFee)) {
+      console.warn(`[Ranowin] "${r.Name || 'a row'}" has no valid DeliveryFee in the sheet — using the fallback of Rs. ${FALLBACK_DELIVERY_FEE}.`);
+    }
+
+    return {
+      name: r.Name || 'Unnamed Bag',
+      price: parseFloat(String(r.Price || '').replace(/[^0-9.]/g, '')) || 0,
+      image: r.ImageLink || '',
+      status: (r.Status || 'In Stock').trim(),
+      deliveryFee
+    };
+  });
 }
 
 async function loadProducts() {
@@ -287,6 +300,7 @@ function renderProducts(products) {
                   ${isOut ? 'disabled' : ''}
                   data-name="${escapeHtml(product.name)}"
                   data-price="${product.price}"
+                  data-delivery="${product.deliveryFee}"
                   data-image="${escapeHtml(product.image)}">
             <span data-i18n="${isOut ? 'outOfStock' : 'orderNow'}">${isOut ? 'Out of Stock' : 'Order Now'}</span>
           </button>
@@ -307,6 +321,7 @@ productGrid.addEventListener('click', (e) => {
   openCheckout({
     name: btn.dataset.name,
     price: Number(btn.dataset.price),
+    deliveryFee: Number(btn.dataset.delivery),
     image: btn.dataset.image
   });
 });
@@ -334,11 +349,11 @@ let lastFocusedElement = null;
 
 function openCheckout(product) {
   selectedProduct = product;
-  const total = product.price + DELIVERY_FEE;
+  const total = product.price + product.deliveryFee;
 
   checkoutProductName.textContent = product.name;
   checkoutItemPrice.textContent = `Rs. ${product.price.toLocaleString()}`;
-  checkoutDeliveryFee.textContent = `Rs. ${DELIVERY_FEE.toLocaleString()}`;
+  checkoutDeliveryFee.textContent = `Rs. ${product.deliveryFee.toLocaleString()}`;
   checkoutTotal.textContent = `Rs. ${total.toLocaleString()}`;
 
   checkoutImage.innerHTML = `
@@ -436,7 +451,7 @@ orderForm.addEventListener('submit', (e) => {
 
   if (!isValid || !selectedProduct) return;
 
-  const total = selectedProduct.price + DELIVERY_FEE;
+  const total = selectedProduct.price + selectedProduct.deliveryFee;
 
   const message =
 `New Order - Ranowin Enterprises
@@ -444,7 +459,7 @@ orderForm.addEventListener('submit', (e) => {
 Product: ${selectedProduct.name}
 Color: ${color}
 Item Price: Rs. ${selectedProduct.price.toLocaleString()}
-Delivery: Rs. ${DELIVERY_FEE}
+Delivery: Rs. ${selectedProduct.deliveryFee.toLocaleString()}
 Total Amount: Rs. ${total.toLocaleString()}
 
 Customer Details
