@@ -4,12 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ranowin Enterprises | Baby Bags</title>
+
+<!-- Favicon placeholder — swap favicon.svg for your own mark any time -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ===================== TOP BANNER ===================== -->
+<!-- Full-width A5-landscape (1.41:1) banner slot, sits above the header. -->
+<!-- Replace the src below with your own artwork whenever it's ready. -->
+<div class="top-banner">
+  <img src="banner-placeholder.svg" alt="Ranowin Enterprises banner">
+</div>
 
 <!-- ===================== HEADER ===================== -->
 <header class="site-header">
@@ -39,138 +50,72 @@
   <section class="shop container" id="shop">
     <h2 class="section-title" data-i18n="sectionOurBags">Our Bags</h2>
 
-    <div class="product-grid">
+    <p class="data-notice" id="dataNotice" data-i18n="dataNotice" hidden>
+      Showing demo products — connect your Google Sheet to see live inventory.
+    </p>
 
-      <!-- ===================================================
-           PRODUCT CARD — duplicate this whole <article> block
-           for every bag you sell. Just change:
-             - the text inside .product-name
-             - the text inside .product-price
-             - the data-name / data-price on the Order Now button
-                (data-price must be a plain number, no commas)
-           =================================================== -->
-      <article class="product-card">
-        <div class="product-image">
-          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
-            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-          </svg>
-        </div>
-        <div class="product-body">
-          <h3 class="product-name">Bag Model 001</h3>
-          <p class="product-price">Rs. 1,800</p>
-          <button type="button" class="btn-primary order-btn" data-name="Bag Model 001" data-price="1800">
-            <span data-i18n="orderNow">Order Now</span>
-          </button>
-          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
-        </div>
-      </article>
+    <p class="loading-text" id="loadingText" data-i18n="loadingProducts">Loading products…</p>
 
-      <article class="product-card">
-        <div class="product-image product-image--alt">
-          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
-            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-          </svg>
-        </div>
-        <div class="product-body">
-          <h3 class="product-name">Bag Model 002</h3>
-          <p class="product-price">Rs. 2,200</p>
-          <button type="button" class="btn-primary order-btn" data-name="Bag Model 002" data-price="2200">
-            <span data-i18n="orderNow">Order Now</span>
-          </button>
-          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
-        </div>
-      </article>
-
-      <article class="product-card">
-        <div class="product-image">
-          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
-            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-          </svg>
-        </div>
-        <div class="product-body">
-          <h3 class="product-name">Bag Model 003</h3>
-          <p class="product-price">Rs. 1,950</p>
-          <button type="button" class="btn-primary order-btn" data-name="Bag Model 003" data-price="1950">
-            <span data-i18n="orderNow">Order Now</span>
-          </button>
-          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
-        </div>
-      </article>
-
-      <article class="product-card">
-        <div class="product-image product-image--alt">
-          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
-            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-          </svg>
-        </div>
-        <div class="product-body">
-          <h3 class="product-name">Bag Model 004</h3>
-          <p class="product-price">Rs. 2,450</p>
-          <button type="button" class="btn-primary order-btn" data-name="Bag Model 004" data-price="2450">
-            <span data-i18n="orderNow">Order Now</span>
-          </button>
-          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
-        </div>
-      </article>
-
-      <article class="product-card">
-        <div class="product-image">
-          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
-            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-          </svg>
-        </div>
-        <div class="product-body">
-          <h3 class="product-name">Bag Model 005</h3>
-          <p class="product-price">Rs. 2,000</p>
-          <button type="button" class="btn-primary order-btn" data-name="Bag Model 005" data-price="2000">
-            <span data-i18n="orderNow">Order Now</span>
-          </button>
-          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
-        </div>
-      </article>
-
-      <article class="product-card">
-        <div class="product-image product-image--alt">
-          <svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
-            <path d="M6 8h12l-1.2 12.5a1 1 0 0 1-1 .9H8.2a1 1 0 0 1-1-.9L6 8Z"/>
-            <path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>
-          </svg>
-        </div>
-        <div class="product-body">
-          <h3 class="product-name">Bag Model 006</h3>
-          <p class="product-price">Rs. 2,650</p>
-          <button type="button" class="btn-primary order-btn" data-name="Bag Model 006" data-price="2650">
-            <span data-i18n="orderNow">Order Now</span>
-          </button>
-          <p class="delivery-note" data-i18n="deliveryNote">(+ Rs. 350 Delivery Charges)</p>
-        </div>
-      </article>
-      <!-- ===== end product card pattern ===== -->
-
-    </div>
+    <!-- Cards are rendered here by script.js after the CSV loads -->
+    <div class="product-grid" id="productGrid"></div>
   </section>
 
 </main>
 
 <!-- ===================== FOOTER ===================== -->
 <footer class="site-footer">
-  <p data-i18n="footerText">© 2026 Ranowin Enterprises</p>
+  <div class="footer-inner container">
+    <p class="footer-business">Ranowin Enterprises</p>
+
+    <p class="footer-contact">
+      <svg viewBox="0 0 24 24" class="footer-icon" aria-hidden="true"><path d="M6 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v3a2 2 0 0 1-2 2C10.6 20 4 13.4 4 6a2 2 0 0 1 2-2Z"/></svg>
+      +94 71 969 2801
+    </p>
+
+    <p class="footer-contact">
+      <svg viewBox="0 0 24 24" class="footer-icon" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+      Pannipitiya, Sri Lanka
+    </p>
+
+    <p class="footer-copy" data-i18n="footerText">© 2026 Ranowin Enterprises</p>
+  </div>
 </footer>
 
-<!-- ===================== CHECKOUT MODAL ===================== -->
-<div class="modal-overlay" id="modalOverlay" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+<!-- ===================== FULL-SCREEN CHECKOUT VIEW ===================== -->
+<!-- Lives in the DOM the whole time; sliding it into view is just a CSS
+     transform + opacity transition, so there's no loading lag. -->
+<div class="checkout-view" id="checkoutView" aria-hidden="true">
+  <div class="checkout-inner container">
 
-    <h2 id="modalTitle" data-i18n="modalTitle">Complete Your Order</h2>
-    <p class="modal-summary" id="modalSummary"></p>
+    <button type="button" class="back-btn" id="checkoutBack">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span data-i18n="backToShop">Back to shop</span>
+    </button>
 
-    <form id="orderForm" novalidate>
+    <div class="checkout-summary">
+      <div class="checkout-image" id="checkoutImage"></div>
+      <div class="checkout-info">
+        <h2 id="checkoutProductName">Bag Model 001</h2>
+        <dl class="price-breakdown">
+          <div class="price-row">
+            <dt data-i18n="itemPriceLabel">Bag Price</dt>
+            <dd id="checkoutItemPrice">Rs. 0</dd>
+          </div>
+          <div class="price-row">
+            <dt data-i18n="deliveryLabel">Delivery Fee</dt>
+            <dd id="checkoutDeliveryFee">Rs. 0</dd>
+          </div>
+          <div class="price-row total-row">
+            <dt data-i18n="totalLabel">Total</dt>
+            <dd id="checkoutTotal">Rs. 0</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <h3 class="form-section-title" data-i18n="formSectionTitle">Delivery Details</h3>
+
+    <form id="orderForm" class="checkout-form" novalidate>
 
       <div class="field">
         <label for="custName" data-i18n="labelName">Name</label>
@@ -212,6 +157,7 @@
 
       <button type="submit" class="btn-primary btn-submit" data-i18n="submitBtn">Send Order via WhatsApp</button>
     </form>
+
   </div>
 </div>
 
