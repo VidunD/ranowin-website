@@ -52,10 +52,15 @@ textarea:focus-visible {
 
 /* ==========================================================
    Top banner (A5 landscape, ~1.41:1)
+   Mobile: full-width, ratio-based height, cropped to fit (cover).
+   Desktop: height capped so it can't dominate the screen; the
+   image is never cropped (contain), and the light-blue backdrop
+   fills any letterboxing on very wide screens.
    ========================================================== */
 .top-banner {
   width: 100%;
   line-height: 0;
+  background: var(--color-bg);
 }
 
 .top-banner img {
@@ -64,6 +69,16 @@ textarea:focus-visible {
   display: block;
   aspect-ratio: 1.4142 / 1;
   object-fit: cover;
+}
+
+@media (min-width: 641px) {
+  .top-banner img {
+    aspect-ratio: auto;
+    height: 250px;
+    max-height: 250px;
+    object-fit: contain;
+    margin: 0 auto;
+  }
 }
 
 /* ==========================================================
