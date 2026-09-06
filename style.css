@@ -3,11 +3,11 @@
    ========================================================== */
 :root {
   --color-bg: #EAF4FF;          /* light blue — page background */
-  --color-surface: #FFFFFF;      /* card / modal background */
+  --color-surface: #FFFFFF;      /* card / checkout background */
   --color-purple: #6C3CE9;       /* header, footer, primary buttons */
   --color-purple-dark: #5429C4;  /* hover / active state */
-  --color-red: #FF6B6B;          /* pastel red — delivery text, errors */
-  --color-red-bg: #FFE3E3;       /* pastel red background (used sparingly) */
+  --color-red: #FF6B6B;          /* pastel red — out of stock, errors */
+  --color-red-bg: #FFE3E3;       /* pastel red background */
   --color-ink: #232633;
   --color-ink-muted: #6B7280;
   --color-line: #E1E8F2;
@@ -29,7 +29,7 @@ h1, h2, h3 {
   margin: 0;
 }
 
-p, ul { margin: 0; padding: 0; }
+p, ul, dl, dd { margin: 0; padding: 0; }
 a { color: inherit; }
 svg { display: block; }
 button { font: inherit; cursor: pointer; }
@@ -41,7 +41,6 @@ button { font: inherit; cursor: pointer; }
   padding-right: 20px;
 }
 
-/* Focus visibility for keyboard users */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -49,6 +48,22 @@ select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--color-purple-dark);
   outline-offset: 2px;
+}
+
+/* ==========================================================
+   Top banner (A5 landscape, ~1.41:1)
+   ========================================================== */
+.top-banner {
+  width: 100%;
+  line-height: 0;
+}
+
+.top-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 1.4142 / 1;
+  object-fit: cover;
 }
 
 /* ==========================================================
@@ -73,17 +88,8 @@ textarea:focus-visible {
   gap: 16px;
 }
 
-.brand-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.brand-subtitle {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 2px;
-}
+.brand-title { font-size: 1.2rem; font-weight: 600; color: #fff; }
+.brand-subtitle { font-size: 0.78rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px; }
 
 .lang-toggle {
   display: flex;
@@ -105,45 +111,36 @@ textarea:focus-visible {
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.lang-btn.active {
-  background: #fff;
-  color: var(--color-purple);
-}
+.lang-btn.active { background: #fff; color: var(--color-purple); }
 
 /* ==========================================================
    Hero
    ========================================================== */
-.hero {
-  padding-top: 40px;
-  padding-bottom: 12px;
-  max-width: 720px;
-}
-
-.hero-headline {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.hero-sub {
-  margin-top: 10px;
-  font-size: 0.98rem;
-  line-height: 1.6;
-  color: var(--color-ink-muted);
-}
+.hero { padding-top: 36px; padding-bottom: 8px; max-width: 720px; }
+.hero-headline { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 600; line-height: 1.25; }
+.hero-sub { margin-top: 10px; font-size: 0.98rem; line-height: 1.6; color: var(--color-ink-muted); }
 
 /* ==========================================================
    Product section + grid
    ========================================================== */
-.shop {
-  padding-top: 32px;
-  padding-bottom: 56px;
+.shop { padding-top: 32px; padding-bottom: 56px; }
+.section-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 16px; }
+
+.data-notice {
+  background: var(--color-red-bg);
+  color: #9A3B3B;
+  font-size: 0.82rem;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  text-align: center;
 }
 
-.section-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 20px;
+.loading-text {
+  text-align: center;
+  color: var(--color-ink-muted);
+  font-size: 0.92rem;
+  padding: 40px 0;
 }
 
 .product-grid {
@@ -152,17 +149,9 @@ textarea:focus-visible {
   gap: 22px;
 }
 
-@media (min-width: 640px) {
-  .product-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .product-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: 1280px) {
-  .product-grid { grid-template-columns: repeat(4, 1fr); }
-}
+@media (min-width: 640px)  { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1280px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .product-card {
   background: var(--color-surface);
@@ -174,15 +163,23 @@ textarea:focus-visible {
 }
 
 .product-image {
+  position: relative;
   aspect-ratio: 4 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-bg);
+  overflow: hidden;
 }
 
-.product-image--alt {
-  background: #DCEBFF;
+.product-image--alt { background: #DCEBFF; }
+
+.product-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .product-icon {
@@ -196,6 +193,20 @@ textarea:focus-visible {
   opacity: 0.75;
 }
 
+.stock-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  background: var(--color-red);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
 .product-body {
   padding: 16px 16px 18px;
   display: flex;
@@ -203,18 +214,13 @@ textarea:focus-visible {
   gap: 4px;
 }
 
-.product-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-ink);
-}
-
+.product-name { font-size: 1rem; font-weight: 600; color: var(--color-ink); }
 .product-price {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--color-ink);
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 
 /* ==========================================================
@@ -239,12 +245,13 @@ textarea:focus-visible {
 .btn-primary:hover { background: var(--color-purple-dark); transform: translateY(-1px); }
 .btn-primary:active { transform: translateY(0); }
 
-.delivery-note {
-  margin-top: 8px;
-  font-size: 0.76rem;
-  font-weight: 500;
+.btn-primary.btn-disabled,
+.btn-primary.btn-disabled:hover {
+  background: var(--color-red-bg);
   color: var(--color-red);
-  text-align: center;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ==========================================================
@@ -252,92 +259,125 @@ textarea:focus-visible {
    ========================================================== */
 .site-footer {
   background: var(--color-purple);
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  padding: 22px 20px;
-  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 28px 20px;
 }
+
+.footer-inner { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.footer-business { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1rem; color: #fff; }
+
+.footer-contact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.footer-icon { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.footer-copy { font-size: 0.78rem; color: rgba(255, 255, 255, 0.65); margin-top: 8px; }
 
 /* ==========================================================
-   Modal
+   Full-screen checkout view (SPA-style slide + fade)
    ========================================================== */
-.modal-overlay {
+body.checkout-locked { overflow: hidden; }
+
+.checkout-view {
   position: fixed;
   inset: 0;
-  background: rgba(20, 20, 30, 0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 100;
-}
-
-.modal-overlay[hidden] { display: none; }
-
-.modal {
-  position: relative;
-  background: var(--color-surface);
-  border-radius: 22px;
-  padding: 28px 24px 24px;
-  width: 100%;
-  max-width: 440px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 40px 80px -20px rgba(var(--shadow-rgb), 0.5);
-}
-
-.modal-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 32px;
-  height: 32px;
-  border: none;
   background: var(--color-bg);
-  color: var(--color-ink-muted);
-  border-radius: 50%;
-  font-size: 1.2rem;
-  line-height: 1;
+  z-index: 300;
+  overflow-y: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.35s ease, opacity 0.3s ease, visibility 0s linear 0.35s;
+}
+
+.checkout-view.open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.35s ease, opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.checkout-inner { max-width: 640px; padding-top: 24px; padding-bottom: 56px; }
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--color-purple);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 8px 0;
+  margin-bottom: 18px;
+}
+
+.back-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.checkout-summary {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: var(--color-surface);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 14px 30px -18px rgba(var(--shadow-rgb), 0.4);
+  margin-bottom: 26px;
+}
+
+.checkout-image {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.modal-close:hover { background: var(--color-line); }
+.checkout-image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.checkout-image svg { width: 44%; height: 44%; stroke: var(--color-purple); fill: none; stroke-width: 1.4; opacity: 0.75; }
 
-.modal h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  padding-right: 30px;
-}
+.checkout-info { flex: 1; min-width: 0; }
+.checkout-info h2 { font-size: 1.05rem; font-weight: 600; margin-bottom: 10px; }
 
-.modal-summary {
+.price-breakdown { display: flex; flex-direction: column; gap: 4px; }
+.price-row { display: flex; justify-content: space-between; font-size: 0.86rem; color: var(--color-ink-muted); }
+.price-row dt, .price-row dd { font-weight: 500; }
+
+.price-row.total-row {
+  border-top: 1px dashed var(--color-line);
   margin-top: 6px;
-  margin-bottom: 18px;
-  font-size: 0.88rem;
-  color: var(--color-ink-muted);
-}
-
-.field {
-  margin-bottom: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.field label {
-  font-size: 0.82rem;
-  font-weight: 600;
+  padding-top: 6px;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--color-ink);
 }
+
+.price-row.total-row dd { color: var(--color-purple); }
+
+.form-section-title { font-size: 1.02rem; font-weight: 600; margin-bottom: 14px; }
+
+/* ==========================================================
+   Shared form field styling (checkout form)
+   ========================================================== */
+.field { margin-bottom: 14px; display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 0.82rem; font-weight: 600; color: var(--color-ink); }
 
 .field input,
 .field select,
 .field textarea {
   border: 1.5px solid var(--color-line);
   border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 0.92rem;
+  padding: 11px 12px;
+  font-size: 0.94rem;
   font-family: inherit;
   color: var(--color-ink);
   background: #fff;
@@ -346,25 +386,16 @@ textarea:focus-visible {
 
 .field input:focus,
 .field select:focus,
-.field textarea:focus {
-  border-color: var(--color-purple);
-  outline: none;
-}
+.field textarea:focus { border-color: var(--color-purple); outline: none; }
 
 .field textarea { resize: vertical; min-height: 64px; }
 
 .field.has-error input,
-.field.has-error select {
-  border-color: var(--color-red);
-}
+.field.has-error select { border-color: var(--color-red); }
 
-.error-text {
-  font-size: 0.76rem;
-  color: var(--color-red);
-  min-height: 1em;
-}
+.error-text { font-size: 0.76rem; color: var(--color-red); min-height: 1em; }
 
-.btn-submit { margin-top: 6px; }
+.btn-submit { margin-top: 8px; }
 
 /* ==========================================================
    Small screens
@@ -372,11 +403,10 @@ textarea:focus-visible {
 @media (max-width: 380px) {
   .header-inner { padding: 14px 16px; }
   .container { padding-left: 16px; padding-right: 16px; }
+  .checkout-summary { flex-direction: column; align-items: flex-start; }
+  .checkout-image { width: 100%; height: 160px; }
 }
 
-/* ==========================================================
-   Respect reduced motion preferences
-   ========================================================== */
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
