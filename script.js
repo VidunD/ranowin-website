@@ -44,7 +44,7 @@ const BAG_ICON_SVG = `<svg viewBox="0 0 24 24" class="product-icon" aria-hidden=
    ---------------------------------------------------------- */
 const translations = {
   en: {
-    brandSubtitle: 'Baby bags, made simple',
+    brandSubtitle: 'Baby bags',
     sectionOurBags: 'Our Bags',
     heroHeadline: 'Bags built for the newborn years.',
     heroSub: 'Soft-structured, easy-clean baby bags designed for hospital trips, daily outings, and everything a new parent carries.',
@@ -76,7 +76,7 @@ const translations = {
     errorColor: 'Please select a bag color.'
   },
   si: {
-    brandSubtitle: 'ළදරු බෑග් - සරලවම',
+    brandSubtitle: 'ළදරු බෑග්',
     sectionOurBags: 'අපගේ බෑග්',
     heroHeadline: 'අලුත උපන් දරුවන්ට ගැලපෙන බෑග්.',
     heroSub: 'රෝහල් සංචාර, දෛනික ගමන් සහ නව දෙමාපියෙකු රැගෙන යන සියල්ලටම ගැලපෙන මෘදු, පිරිසිදු කිරීමට පහසු ළදරු බෑග්.',
@@ -108,7 +108,7 @@ const translations = {
     errorColor: 'කරුණාකර බෑග් වර්ණයක් තෝරන්න.'
   },
   ta: {
-    brandSubtitle: 'குழந்தை பைகள் - எளிதாக',
+    brandSubtitle: 'குழந்தை பைகள்',
     sectionOurBags: 'எங்கள் பைகள்',
     heroHeadline: 'புதிதாகப் பிறந்த குழந்தைகளுக்கு ஏற்ற பைகள்.',
     heroSub: 'மருத்துவமனை பயணங்கள், தினசரி வெளியீடுகள் மற்றும் புதிய பெற்றோர் சுமக்கும் அனைத்திற்கும் ஏற்ற மென்மையான, சுத்தம் செய்ய எளிதான குழந்தை பைகள்.',
