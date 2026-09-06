@@ -244,7 +244,9 @@ function normalizeProducts(rawRows) {
 
 async function loadProducts() {
   try {
-    const res = await fetch(SHEET_CSV_URL);
+    // Cache eka nathi karanna time eka link ekata ekathu kara
+    const res = await fetch(SHEET_CSV_URL + "&t=" + new Date().getTime());
+    
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     const rows = parseCSV(text);
