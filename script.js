@@ -11,7 +11,7 @@
 // In Google Sheets: File > Share > Publish to web > select the sheet,
 // choose "Comma-separated values (.csv)", then paste that link here.
 // Expected columns (first row = headers): Name, Price, ImageLink, Status
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX3ME8gLubgdcM-QzUKRJ7GO0pabllVpknR11UGFBlOQ5YbCfmNf4rEAdOKTYIgdfi7i5an1Nx-L3K/pubhtml';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX3ME8gLubgdcM-QzUKRJ7GO0pabllVpknR11UGFBlOQ5YbCfmNf4rEAdOKTYIgdfi7i5an1Nx-L3K/pub?output=csv';
 
 const WHATSAPP_NUMBER = '94719692801'; // international format, no + and no leading 0
 const DELIVERY_FEE = 350;
