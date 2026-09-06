@@ -1,102 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ranowin Enterprises</title>
-  <!-- Favicon eka -->
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranowin Enterprises | Baby Bags</title>
+
+<!-- Favicon placeholder — swap favicon.svg for your own mark any time -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top Banner -->
-  <div class="banner-container">
-    <img src="banner-placeholder.svg" alt="Ranowin Banner" class="top-banner">
-  </div>
+<!-- ===================== TOP BANNER ===================== -->
+<!-- Full-width A5-landscape (1.41:1) banner slot, sits above the header. -->
+<!-- Replace the src below with your own artwork whenever it's ready. -->
+<div class="top-banner">
+  <img src="banner-placeholder.svg" alt="Ranowin Enterprises banner">
+</div>
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-inner">
-      <h1 data-i18n="brandTitle">Ranowin Enterprises</h1>
-      <div class="lang-switch">
-        <button type="button" class="lang-btn active" onclick="changeLang('en')">EN</button>
-        <button type="button" class="lang-btn" onclick="changeLang('si')">SI</button>
-        <button type="button" class="lang-btn" onclick="changeLang('ta')">TA</button>
+<!-- ===================== HEADER ===================== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <h1 class="brand-title">Ranowin Enterprises</h1>
+      <p class="brand-subtitle" data-i18n="brandSubtitle">Baby bags, made simple</p>
+    </div>
+
+    <nav class="lang-toggle" aria-label="Language selector">
+      <button type="button" class="lang-btn active" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="si">SI</button>
+      <button type="button" class="lang-btn" data-lang="ta">TA</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero container">
+    <h2 class="hero-headline" data-i18n="heroHeadline">Bags built for the newborn years.</h2>
+    <p class="hero-sub" data-i18n="heroSub">Soft-structured, easy-clean baby bags designed for hospital trips, daily outings, and everything a new parent carries.</p>
+  </section>
+
+  <!-- ===================== PRODUCT GRID ===================== -->
+  <section class="shop container" id="shop">
+    <h2 class="section-title" data-i18n="sectionOurBags">Our Bags</h2>
+
+    <p class="data-notice" id="dataNotice" data-i18n="dataNotice" hidden>
+      Showing demo products — connect your Google Sheet to see live inventory.
+    </p>
+
+    <p class="loading-text" id="loadingText" data-i18n="loadingProducts">Loading products…</p>
+
+    <!-- Cards are rendered here by script.js after the CSV loads -->
+    <div class="product-grid" id="productGrid"></div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <div class="footer-inner container">
+    <p class="footer-business">Ranowin Enterprises</p>
+
+    <p class="footer-contact">
+      <svg viewBox="0 0 24 24" class="footer-icon" aria-hidden="true"><path d="M6 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v3a2 2 0 0 1-2 2C10.6 20 4 13.4 4 6a2 2 0 0 1 2-2Z"/></svg>
+      +94 71 969 2801
+    </p>
+
+    <p class="footer-contact">
+      <svg viewBox="0 0 24 24" class="footer-icon" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+      Pannipitiya, Sri Lanka
+    </p>
+
+    <p class="footer-copy" data-i18n="footerText">© 2026 Ranowin Enterprises</p>
+  </div>
+</footer>
+
+<!-- ===================== FULL-SCREEN CHECKOUT VIEW ===================== -->
+<!-- Lives in the DOM the whole time; sliding it into view is just a CSS
+     transform + opacity transition, so there's no loading lag. -->
+<div class="checkout-view" id="checkoutView" aria-hidden="true">
+  <div class="checkout-inner container">
+
+    <button type="button" class="back-btn" id="checkoutBack">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span data-i18n="backToShop">Back to shop</span>
+    </button>
+
+    <div class="checkout-summary">
+      <div class="checkout-image" id="checkoutImage"></div>
+      <div class="checkout-info">
+        <h2 id="checkoutProductName">Bag Model 001</h2>
+        <dl class="price-breakdown">
+          <div class="price-row">
+            <dt data-i18n="itemPriceLabel">Bag Price</dt>
+            <dd id="checkoutItemPrice">Rs. 0</dd>
+          </div>
+          <div class="price-row">
+            <dt data-i18n="deliveryLabel">Delivery Fee</dt>
+            <dd id="checkoutDeliveryFee">Rs. 0</dd>
+          </div>
+          <div class="price-row total-row">
+            <dt data-i18n="totalLabel">Total</dt>
+            <dd id="checkoutTotal">Rs. 0</dd>
+          </div>
+        </dl>
       </div>
     </div>
-  </header>
 
-  <!-- Main Product Grid -->
-  <main id="home-view" class="container">
-    <div class="product-grid" id="productGrid">
-      <p style="text-align:center; width:100%;">Loading products from Google Sheets...</p>
-    </div>
-  </main>
+    <h3 class="form-section-title" data-i18n="formSectionTitle">Delivery Details</h3>
 
-  <!-- Slide-in Checkout View (SPA) -->
-  <div id="checkout-view" class="checkout-view">
-    <div class="checkout-container">
-      <button type="button" class="btn-back" onclick="closeCheckout()">&#8592; <span data-i18n="backBtn">Back</span></button>
-      
-      <div class="checkout-summary">
-        <img id="chk-img" src="" alt="Bag">
-        <h2 id="chk-title">Bag Name</h2>
-        
-        <div class="price-calc">
-          <div class="calc-row">
-            <span data-i18n="bagPriceTxt">Bag Price:</span>
-            <span>Rs. <span id="chk-price">0</span></span>
-          </div>
-          <div class="calc-row fee-row">
-            <span data-i18n="deliveryTxt">Delivery Fee:</span>
-            <span>Rs. <span id="chk-delivery">0</span></span>
-          </div>
-          <div class="calc-row total-row">
-            <span data-i18n="totalTxt">Total Amount:</span>
-            <span>Rs. <span id="chk-total">0</span></span>
-          </div>
-        </div>
+    <form id="orderForm" class="checkout-form" novalidate>
+
+      <div class="field">
+        <label for="custName" data-i18n="labelName">Name</label>
+        <input type="text" id="custName" name="name" required
+               data-i18n-placeholder="placeholderName" placeholder="Your full name">
+        <span class="error-text" id="err-name"></span>
       </div>
 
-      <form id="orderForm" onsubmit="submitOrder(event)">
-        <div class="field">
-          <label data-i18n="labelName">Name</label>
-          <input type="text" id="custName" required>
-        </div>
-        <div class="field">
-          <label data-i18n="labelAddress">Delivery Address</label>
-          <input type="text" id="custAddress" required>
-        </div>
-        <div class="field">
-          <label data-i18n="labelPhone">Phone Number</label>
-          <!-- Strict number validation -->
-          <input type="tel" id="custPhone" required maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="07XXXXXXXX">
-        </div>
-        <div class="field">
-          <label data-i18n="labelColor">Bag Color</label>
-          <select id="custColor" required>
-            <option value="" disabled selected data-i18n="selectColor">Select a color</option>
-            <option value="Blue" data-i18n="colorBlue">Blue</option>
-            <option value="Pink" data-i18n="colorPink">Pink</option>
-          </select>
-        </div>
-        <div class="field">
-          <label data-i18n="labelNote">Special Note (optional)</label>
-          <textarea id="custNote" rows="2"></textarea>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;" data-i18n="submitBtn">Send Order via WhatsApp</button>
-      </form>
-    </div>
+      <div class="field">
+        <label for="custAddress" data-i18n="labelAddress">Delivery Address</label>
+        <input type="text" id="custAddress" name="address" required
+               data-i18n-placeholder="placeholderAddress" placeholder="House no, street, city">
+        <span class="error-text" id="err-address"></span>
+      </div>
+
+      <div class="field">
+        <label for="custPhone" data-i18n="labelPhone">Phone Number</label>
+        <input type="tel" id="custPhone" name="phone" required
+               inputmode="numeric" pattern="[0-9]*" maxlength="10"
+               data-i18n-placeholder="placeholderPhone" placeholder="07XXXXXXXX">
+        <span class="error-text" id="err-phone"></span>
+      </div>
+
+      <div class="field">
+        <label for="custColor" data-i18n="labelColor">Bag Color</label>
+        <select id="custColor" name="color" required>
+          <option value="" disabled selected data-i18n="selectColor">Select a color</option>
+          <option value="Blue" data-i18n="colorBlue">Blue</option>
+          <option value="Pink" data-i18n="colorPink">Pink</option>
+        </select>
+        <span class="error-text" id="err-color"></span>
+      </div>
+
+      <div class="field">
+        <label for="custNote" data-i18n="labelNote">Special Note (optional)</label>
+        <textarea id="custNote" name="note" rows="3"
+                  data-i18n-placeholder="placeholderNote" placeholder="Anything else we should know?"></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary btn-submit" data-i18n="submitBtn">Send Order via WhatsApp</button>
+    </form>
+
   </div>
+</div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <p><strong>Ranowin Enterprises</strong></p>
-    <p>📞 07X XXX XXXX | 📍 Your Address Here</p>
-    <p style="font-size: 0.8rem; margin-top: 10px;">&copy; 2026 Ranowin Enterprises</p>
-  </footer>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
