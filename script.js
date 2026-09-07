@@ -70,7 +70,7 @@ const translations = {
     placeholderPhone: '07XXXXXXXX',
     placeholderNote: 'Anything else we should know?',
     submitBtn: 'Send Order via WhatsApp',
-    footerText: '© 2026 Ranowin Enterprises',
+    footerText: '© 2026 Ranowin Products',
     errorRequired: 'This field is required.',
     errorPhone: 'Please enter numbers only (9–10 digits).',
     errorColor: 'Please select a bag color.'
@@ -102,7 +102,7 @@ const translations = {
     placeholderPhone: '07XXXXXXXX',
     placeholderNote: 'අපි දැනගත යුතු වෙනත් දෙයක් තිබේද?',
     submitBtn: 'WhatsApp හරහා ඇණවුම යවන්න',
-    footerText: '© 2026 Ranowin Enterprises',
+    footerText: '© 2026 Ranowin Products',
     errorRequired: 'මෙම ක්ෂේත්‍රය අවශ්‍යයි.',
     errorPhone: 'කරුණාකර ඉලක්කම් පමණක් ඇතුළත් කරන්න (අංක 9–10).',
     errorColor: 'කරුණාකර බෑග් වර්ණයක් තෝරන්න.'
@@ -134,7 +134,7 @@ const translations = {
     placeholderPhone: '07XXXXXXXX',
     placeholderNote: 'நாங்கள் தெரிந்து கொள்ள வேண்டிய வேறு ஏதேனும் உள்ளதா?',
     submitBtn: 'WhatsApp மூலம் ஆர்டரை அனுப்பவும்',
-    footerText: '© 2026 Ranowin Enterprises',
+    footerText: '© 2026 Ranowin Products',
     errorRequired: 'இந்த புலம் அவசியம்.',
     errorPhone: 'எண்களை மட்டும் உள்ளிடவும் (9–10 இலக்கங்கள்).',
     errorColor: 'தயவுசெய்து ஒரு பை நிறத்தை தேர்ந்தெடுக்கவும்.'
