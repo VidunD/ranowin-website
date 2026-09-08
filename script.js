@@ -1,5 +1,5 @@
 /* ==========================================================
-   Ranowin Enterprises — site script
+   Ranowin Products — site script
    No frameworks, no build step — just vanilla JS.
    ========================================================== */
 
@@ -9,7 +9,11 @@
 
 // Published Google Sheet CSV link. In Google Sheets: File > Share >
 // Publish to web > select the sheet > "Comma-separated values (.csv)".
-// Expected columns (first row = headers): Name, Price, ImageLink, Status, DeliveryFee
+// Expected columns (first row = headers):
+//   Name, Price, ImageLink, Status, DeliveryFee
+// Optional columns (leave blank if you don't need them):
+//   ImageLink2, ImageLink3   — extra photos, shown in the checkout gallery
+//   DescriptionEN, DescriptionSI, DescriptionTA — short product blurb per language
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX3ME8gLubgdcM-QzUKRJ7GO0pabllVpknR11UGFBlOQ5YbCfmNf4rEAdOKTYIgdfi7i5an1Nx-L3K/pub?output=csv';
 
 const WHATSAPP_NUMBER = '94719692801'; // international format, no + and no leading 0
@@ -23,12 +27,18 @@ const FALLBACK_DELIVERY_FEE = 350;
 // block cross-origin fetches). This just keeps the page from looking
 // empty — your real data always wins when the fetch succeeds.
 const FALLBACK_PRODUCTS = [
-  { name: 'Bag Model 001', price: 1800, image: '', status: 'In Stock', deliveryFee: 350 },
-  { name: 'Bag Model 002', price: 2200, image: '', status: 'In Stock', deliveryFee: 350 },
-  { name: 'Bag Model 003', price: 1950, image: '', status: 'Out of Stock', deliveryFee: 350 },
-  { name: 'Bag Model 004', price: 2450, image: '', status: 'In Stock', deliveryFee: 400 },
-  { name: 'Bag Model 005', price: 2000, image: '', status: 'In Stock', deliveryFee: 350 },
-  { name: 'Bag Model 006', price: 2650, image: '', status: 'Out of Stock', deliveryFee: 400 }
+  {
+    name: 'Bag Model 001', price: 1800, image: '', images: [], status: 'In Stock', deliveryFee: 350,
+    descriptions: { en: 'A soft-structured everyday bag with room for diapers, wipes, and a change of clothes.', si: 'ඩයපර්, වයිප්ස් සහ ඇඳුම් මාරුවක් තියාගන්න පුළුවන් මෘදු දෛනික බෑගයක්.', ta: 'டயப்பர், துடைப்பான்கள் மற்றும் உடை மாற்றத்திற்கு இடம் கொண்ட மென்மையான தினசரி பை.' }
+  },
+  {
+    name: 'Bag Model 002', price: 2200, image: '', images: [], status: 'In Stock', deliveryFee: 350,
+    descriptions: { en: 'A spacious hospital-bag style tote with multiple compartments for organised packing.', si: 'රෝහල් බෑගයක් වගේ පෝෂිත කොටස් කිහිපයකින් යුත් ලොකු බෑගයක්.', ta: 'ஒழுங்கான பொருட்களை வைக்க பல பிரிவுகளுடன் கூடிய பரந்த மருத்துவமனை பை பாணி பை.' }
+  },
+  { name: 'Bag Model 003', price: 1950, image: '', images: [], status: 'Out of Stock', deliveryFee: 350, descriptions: { en: '', si: '', ta: '' } },
+  { name: 'Bag Model 004', price: 2450, image: '', images: [], status: 'In Stock', deliveryFee: 400, descriptions: { en: '', si: '', ta: '' } },
+  { name: 'Bag Model 005', price: 2000, image: '', images: [], status: 'In Stock', deliveryFee: 350, descriptions: { en: '', si: '', ta: '' } },
+  { name: 'Bag Model 006', price: 2650, image: '', images: [], status: 'Out of Stock', deliveryFee: 400, descriptions: { en: '', si: '', ta: '' } }
 ];
 
 const BAG_ICON_SVG = `<svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
@@ -44,7 +54,7 @@ const BAG_ICON_SVG = `<svg viewBox="0 0 24 24" class="product-icon" aria-hidden=
    ---------------------------------------------------------- */
 const translations = {
   en: {
-    brandSubtitle: 'Baby bags',
+    brandSubtitle: 'Baby bags, made simple',
     sectionOurBags: 'Our Bags',
     heroHeadline: 'Bags built for the newborn years.',
     heroSub: 'Soft-structured, easy-clean baby bags designed for hospital trips, daily outings, and everything a new parent carries.',
@@ -52,6 +62,8 @@ const translations = {
     loadingProducts: 'Loading products…',
     orderNow: 'Order Now',
     outOfStock: 'Out of Stock',
+    customOrderNote: 'This bag is out of stock right now. However, you can still request a custom order, and we will stitch a new one for your little one! Your custom-made bag will be delivered right to your doorstep within 7 days.',
+    requestCustomOrder: 'Request Custom Order',
     backToShop: 'Back to shop',
     itemPriceLabel: 'Bag Price',
     deliveryLabel: 'Delivery Fee',
@@ -76,7 +88,7 @@ const translations = {
     errorColor: 'Please select a bag color.'
   },
   si: {
-    brandSubtitle: 'ළදරු බෑග්',
+    brandSubtitle: 'ළදරු බෑග් - සරලවම',
     sectionOurBags: 'අපගේ බෑග්',
     heroHeadline: 'අලුත උපන් දරුවන්ට ගැලපෙන බෑග්.',
     heroSub: 'රෝහල් සංචාර, දෛනික ගමන් සහ නව දෙමාපියෙකු රැගෙන යන සියල්ලටම ගැලපෙන මෘදු, පිරිසිදු කිරීමට පහසු ළදරු බෑග්.',
@@ -84,6 +96,8 @@ const translations = {
     loadingProducts: 'නිෂ්පාදන පූරණය වෙමින්…',
     orderNow: 'දැන් ඇණවුම් කරන්න',
     outOfStock: 'තොග අවසන්',
+    customOrderNote: 'මෙම බෑගය දැනට තොග නොමැත. නමුත් ඔබට තවමත් විශේෂ ඇණවුමක් ඉල්ලා සිටිය හැක, අපි ඔබේ දරුවා සඳහා අලුත් එකක් මසා දෙන්නෙමු! ඔබේ විශේෂ බෑගය දින 7ක් ඇතුළත ඔබේ දොරකඩටම ගෙන්වා දෙනු ලැබේ.',
+    requestCustomOrder: 'විශේෂ ඇණවුමක් ඉල්ලන්න',
     backToShop: 'සාප්පුවට ආපසු',
     itemPriceLabel: 'බෑග් මිල',
     deliveryLabel: 'බෙදාහැරීමේ ගාස්තුව',
@@ -108,7 +122,7 @@ const translations = {
     errorColor: 'කරුණාකර බෑග් වර්ණයක් තෝරන්න.'
   },
   ta: {
-    brandSubtitle: 'குழந்தை பைகள்',
+    brandSubtitle: 'குழந்தை பைகள் - எளிதாக',
     sectionOurBags: 'எங்கள் பைகள்',
     heroHeadline: 'புதிதாகப் பிறந்த குழந்தைகளுக்கு ஏற்ற பைகள்.',
     heroSub: 'மருத்துவமனை பயணங்கள், தினசரி வெளியீடுகள் மற்றும் புதிய பெற்றோர் சுமக்கும் அனைத்திற்கும் ஏற்ற மென்மையான, சுத்தம் செய்ய எளிதான குழந்தை பைகள்.',
@@ -116,6 +130,8 @@ const translations = {
     loadingProducts: 'பொருட்கள் ஏற்றப்படுகின்றன…',
     orderNow: 'இப்போது ஆர்டர் செய்யவும்',
     outOfStock: 'கையிருப்பு இல்லை',
+    customOrderNote: 'இந்தப் பை தற்போது கையிருப்பில் இல்லை. இருப்பினும், நீங்கள் இன்னும் ஒரு தனிப்பயன் ஆர்டரை கோரலாம், நாங்கள் உங்கள் குழந்தைக்காக புதிதாக ஒன்று தைத்துத் தருவோம்! உங்கள் தனிப்பயன் பை 7 நாட்களுக்குள் உங்கள் வீட்டு வாசலுக்கே கொண்டு வரப்படும்.',
+    requestCustomOrder: 'தனிப்பயன் ஆர்டரைக் கோருங்கள்',
     backToShop: 'கடைக்குத் திரும்பு',
     itemPriceLabel: 'பை விலை',
     deliveryLabel: 'டெலிவரி கட்டணம்',
@@ -171,6 +187,12 @@ function setLanguage(lang) {
   });
 
   try { localStorage.setItem('ranowin_lang', lang); } catch (e) { /* storage unavailable, ignore */ }
+
+  // The product description in the checkout view is per-language data,
+  // not a static UI string, so it needs its own refresh on language switch.
+  if (selectedProduct && checkoutView.classList.contains('open')) {
+    updateCheckoutDescription();
+  }
 }
 
 document.querySelectorAll('.lang-btn').forEach((btn) => {
@@ -232,21 +254,31 @@ function normalizeProducts(rawRows) {
       console.warn(`[Ranowin] "${r.Name || 'a row'}" has no valid DeliveryFee in the sheet — using the fallback of Rs. ${FALLBACK_DELIVERY_FEE}.`);
     }
 
+    // ImageLink is the cover photo shown on the product card. ImageLink2/3
+    // are optional extras that only show up in the checkout gallery.
+    const images = [r.ImageLink, r.ImageLink2, r.ImageLink3]
+      .map((s) => (s || '').trim())
+      .filter(Boolean);
+
     return {
       name: r.Name || 'Unnamed Bag',
       price: parseFloat(String(r.Price || '').replace(/[^0-9.]/g, '')) || 0,
       image: r.ImageLink || '',
+      images,
       status: (r.Status || 'In Stock').trim(),
-      deliveryFee
+      deliveryFee,
+      descriptions: {
+        en: (r.DescriptionEN || '').trim(),
+        si: (r.DescriptionSI || '').trim(),
+        ta: (r.DescriptionTA || '').trim()
+      }
     };
   });
 }
 
 async function loadProducts() {
   try {
-    // Cache eka nathi karanna time eka link ekata ekathu kara
-    const res = await fetch(SHEET_CSV_URL + "&t=" + new Date().getTime());
-    
+    const res = await fetch(SHEET_CSV_URL);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     const rows = parseCSV(text);
@@ -275,6 +307,12 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+// For embedding a JSON blob inside a single-quoted HTML attribute —
+// only the single quote needs escaping since JSON itself uses double quotes.
+function toAttrJson(value) {
+  return JSON.stringify(value).replace(/'/g, '&#39;');
+}
+
 /* ----------------------------------------------------------
    5. RENDER PRODUCT GRID
    ---------------------------------------------------------- */
@@ -287,6 +325,27 @@ function renderProducts(products) {
     const isOut = product.status.toLowerCase() === 'out of stock';
     const altClass = index % 2 === 1 ? ' product-image--alt' : '';
 
+    const sharedButtonData = `
+      data-name="${escapeHtml(product.name)}"
+      data-price="${product.price}"
+      data-delivery="${product.deliveryFee}"
+      data-images='${toAttrJson(product.images)}'
+      data-desc='${toAttrJson(product.descriptions)}'
+    `;
+
+    const buttonHtml = isOut
+      ? `
+        <p class="custom-order-note" data-i18n="customOrderNote">${escapeHtml(translations.en.customOrderNote)}</p>
+        <button type="button" class="btn-primary btn-custom-order order-btn" data-preorder="true" ${sharedButtonData}>
+          <span data-i18n="requestCustomOrder">Request Custom Order</span>
+        </button>
+      `
+      : `
+        <button type="button" class="btn-primary order-btn" data-preorder="false" ${sharedButtonData}>
+          <span data-i18n="orderNow">Order Now</span>
+        </button>
+      `;
+
     return `
       <article class="product-card">
         <div class="product-image${altClass}">
@@ -297,15 +356,7 @@ function renderProducts(products) {
         <div class="product-body">
           <h3 class="product-name">${escapeHtml(product.name)}</h3>
           <p class="product-price">Rs. ${product.price.toLocaleString()}</p>
-          <button type="button"
-                  class="btn-primary order-btn${isOut ? ' btn-disabled' : ''}"
-                  ${isOut ? 'disabled' : ''}
-                  data-name="${escapeHtml(product.name)}"
-                  data-price="${product.price}"
-                  data-delivery="${product.deliveryFee}"
-                  data-image="${escapeHtml(product.image)}">
-            <span data-i18n="${isOut ? 'outOfStock' : 'orderNow'}">${isOut ? 'Out of Stock' : 'Order Now'}</span>
-          </button>
+          ${buttonHtml}
         </div>
       </article>
     `;
@@ -314,17 +365,25 @@ function renderProducts(products) {
   applyTranslations(currentLang);
 }
 
-/* Event delegation: one listener handles every Order Now button,
-   including ones added/replaced by future re-renders. */
+/* Event delegation: one listener handles every Order Now / Request Custom
+   Order button, including ones added/replaced by future re-renders. */
 productGrid.addEventListener('click', (e) => {
   const btn = e.target.closest('.order-btn');
-  if (!btn || btn.disabled) return;
+  if (!btn) return;
+
+  let images = [];
+  let descriptions = { en: '', si: '', ta: '' };
+  try { images = JSON.parse(btn.dataset.images || '[]'); } catch (err) { /* ignore malformed data */ }
+  try { descriptions = JSON.parse(btn.dataset.desc || '{}'); } catch (err) { /* ignore malformed data */ }
+
   lastFocusedElement = btn;
   openCheckout({
     name: btn.dataset.name,
     price: Number(btn.dataset.price),
     deliveryFee: Number(btn.dataset.delivery),
-    image: btn.dataset.image
+    images,
+    descriptions,
+    isPreorder: btn.dataset.preorder === 'true'
   });
 });
 
@@ -334,6 +393,7 @@ productGrid.addEventListener('click', (e) => {
 const checkoutView = document.getElementById('checkoutView');
 const checkoutBack = document.getElementById('checkoutBack');
 const checkoutImage = document.getElementById('checkoutImage');
+const checkoutDescription = document.getElementById('checkoutDescription');
 const checkoutProductName = document.getElementById('checkoutProductName');
 const checkoutItemPrice = document.getElementById('checkoutItemPrice');
 const checkoutDeliveryFee = document.getElementById('checkoutDeliveryFee');
@@ -348,6 +408,40 @@ const custNote = document.getElementById('custNote');
 
 let selectedProduct = null;
 let lastFocusedElement = null;
+let galleryImages = [];
+let galleryIndex = 0;
+
+function renderGallery() {
+  const hasMultiple = galleryImages.length > 1;
+  const current = galleryImages[galleryIndex];
+
+  checkoutImage.innerHTML = `
+    ${BAG_ICON_SVG}
+    ${current ? `<img src="${escapeHtml(current)}" alt="${escapeHtml(selectedProduct.name)}" onerror="this.style.display='none'">` : ''}
+    ${hasMultiple ? `
+      <button type="button" class="gallery-nav gallery-prev" aria-label="Previous photo">&lsaquo;</button>
+      <button type="button" class="gallery-nav gallery-next" aria-label="Next photo">&rsaquo;</button>
+      <div class="gallery-dots">${galleryImages.map((_, i) => `<span class="dot${i === galleryIndex ? ' active' : ''}"></span>`).join('')}</div>
+    ` : ''}
+  `;
+
+  if (hasMultiple) {
+    checkoutImage.querySelector('.gallery-prev').addEventListener('click', () => {
+      galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+      renderGallery();
+    });
+    checkoutImage.querySelector('.gallery-next').addEventListener('click', () => {
+      galleryIndex = (galleryIndex + 1) % galleryImages.length;
+      renderGallery();
+    });
+  }
+}
+
+function updateCheckoutDescription() {
+  const text = (selectedProduct.descriptions && selectedProduct.descriptions[currentLang]) || '';
+  checkoutDescription.textContent = text;
+  checkoutDescription.hidden = !text;
+}
 
 function openCheckout(product) {
   selectedProduct = product;
@@ -358,10 +452,10 @@ function openCheckout(product) {
   checkoutDeliveryFee.textContent = `Rs. ${product.deliveryFee.toLocaleString()}`;
   checkoutTotal.textContent = `Rs. ${total.toLocaleString()}`;
 
-  checkoutImage.innerHTML = `
-    ${BAG_ICON_SVG}
-    ${product.image ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" onerror="this.style.display='none'">` : ''}
-  `;
+  galleryImages = product.images && product.images.length ? product.images : [];
+  galleryIndex = 0;
+  renderGallery();
+  updateCheckoutDescription();
 
   clearAllErrors();
   orderForm.reset();
@@ -454,9 +548,10 @@ orderForm.addEventListener('submit', (e) => {
   if (!isValid || !selectedProduct) return;
 
   const total = selectedProduct.price + selectedProduct.deliveryFee;
+  const orderType = selectedProduct.isPreorder ? 'Preorder' : 'New Order';
 
   const message =
-`New Order - Ranowin Enterprises
+`${orderType} - Ranowin Products
 --------------------------------
 Product: ${selectedProduct.name}
 Color: ${color}
