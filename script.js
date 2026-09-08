@@ -411,6 +411,76 @@ let lastFocusedElement = null;
 let galleryImages = [];
 let galleryIndex = 0;
 
+const lightbox = document.getElementById('lightbox');
+const lightboxClose = document.getElementById('lightboxClose');
+const lightboxStage = document.getElementById('lightboxStage');
+let lightboxIndex = 0;
+
+function renderLightbox() {
+  const hasMultiple = galleryImages.length > 1;
+  const current = galleryImages[lightboxIndex];
+  const altText = selectedProduct ? selectedProduct.name : '';
+
+  lightboxStage.innerHTML = `
+    ${current ? `<img src="${escapeHtml(current)}" alt="${escapeHtml(altText)}">` : ''}
+    ${hasMultiple ? `
+      <button type="button" class="lightbox-nav lightbox-prev" aria-label="Previous photo">&lsaquo;</button>
+      <button type="button" class="lightbox-nav lightbox-next" aria-label="Next photo">&rsaquo;</button>
+      <div class="lightbox-dots">${galleryImages.map((_, i) => `<span class="dot${i === lightboxIndex ? ' active' : ''}"></span>`).join('')}</div>
+    ` : ''}
+  `;
+
+  if (hasMultiple) {
+    lightboxStage.querySelector('.lightbox-prev').addEventListener('click', () => {
+      lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+      renderLightbox();
+    });
+    lightboxStage.querySelector('.lightbox-next').addEventListener('click', () => {
+      lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
+      renderLightbox();
+    });
+  }
+}
+
+function openLightbox(startIndex) {
+  lightboxIndex = startIndex;
+  renderLightbox();
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden', 'false');
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  // Keep the small gallery in sync with whatever photo was last viewed fullscreen.
+  galleryIndex = lightboxIndex;
+  renderGallery();
+}
+
+lightboxClose.addEventListener('click', closeLightbox);
+
+// Tapping the empty backdrop (not the photo or the arrows) closes it too.
+lightboxStage.addEventListener('click', (e) => {
+  if (e.target === lightboxStage) closeLightbox();
+});
+
+// Swipe support for touch devices, arrow-key support for everyone else.
+let touchStartX = null;
+lightboxStage.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].clientX;
+}, { passive: true });
+
+lightboxStage.addEventListener('touchend', (e) => {
+  if (touchStartX === null || galleryImages.length <= 1) return;
+  const deltaX = e.changedTouches[0].clientX - touchStartX;
+  touchStartX = null;
+  if (Math.abs(deltaX) < 40) return; // ignore small taps/jitter
+  lightboxIndex = deltaX < 0
+    ? (lightboxIndex + 1) % galleryImages.length
+    : (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+  renderLightbox();
+}, { passive: true });
+
 function renderGallery() {
   const hasMultiple = galleryImages.length > 1;
   const current = galleryImages[galleryIndex];
@@ -436,6 +506,12 @@ function renderGallery() {
     });
   }
 }
+
+checkoutImage.addEventListener('click', (e) => {
+  if (e.target.closest('.gallery-nav')) return; // let the arrows do their own thing
+  if (!galleryImages.length) return; // nothing but the placeholder icon to show
+  openLightbox(galleryIndex);
+});
 
 function updateCheckoutDescription() {
   const text = (selectedProduct.descriptions && selectedProduct.descriptions[currentLang]) || '';
@@ -477,7 +553,15 @@ function closeCheckout() {
 checkoutBack.addEventListener('click', closeCheckout);
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && checkoutView.classList.contains('open')) closeCheckout();
+  if (!lightbox.classList.contains('open')) {
+    if (e.key === 'Escape' && checkoutView.classList.contains('open')) closeCheckout();
+    return;
+  }
+
+  if (e.key === 'Escape') { closeLightbox(); return; }
+  if (galleryImages.length <= 1) return;
+  if (e.key === 'ArrowLeft') { lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length; renderLightbox(); }
+  if (e.key === 'ArrowRight') { lightboxIndex = (lightboxIndex + 1) % galleryImages.length; renderLightbox(); }
 });
 
 /* Keep keyboard focus inside the checkout view while it's open */
