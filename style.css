@@ -553,6 +553,7 @@ body.checkout-locked { overflow: hidden; }
    Shared form field styling (checkout form)
    ========================================================== */
 .field { margin-bottom: 14px; display: flex; flex-direction: column; gap: 5px; }
+.field[hidden] { display: none; }
 .field label { font-size: 0.82rem; font-weight: 600; color: var(--color-ink); }
 
 .field input,
