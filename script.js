@@ -14,6 +14,9 @@
 // Optional columns (leave blank if you don't need them):
 //   ImageLink2, ImageLink3   — extra photos, shown in the checkout gallery
 //   DescriptionEN, DescriptionSI, DescriptionTA — short product blurb per language
+//   ColorOptions — comma-separated colors, e.g. "Blue,Pink". Leave blank
+//     for bags that don't come in color choices — the color field just
+//     won't show up for those in checkout.
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX3ME8gLubgdcM-QzUKRJ7GO0pabllVpknR11UGFBlOQ5YbCfmNf4rEAdOKTYIgdfi7i5an1Nx-L3K/pub?output=csv';
 
 const WHATSAPP_NUMBER = '94719692801'; // international format, no + and no leading 0
@@ -29,16 +32,18 @@ const FALLBACK_DELIVERY_FEE = 350;
 const FALLBACK_PRODUCTS = [
   {
     name: 'Bag Model 001', price: 1800, image: '', images: [], status: 'In Stock', deliveryFee: 350,
+    colorOptions: ['Blue', 'Pink'],
     descriptions: { en: 'A soft-structured everyday bag with room for diapers, wipes, and a change of clothes.', si: 'ඩයපර්, වයිප්ස් සහ ඇඳුම් මාරුවක් තියාගන්න පුළුවන් මෘදු දෛනික බෑගයක්.', ta: 'டயப்பர், துடைப்பான்கள் மற்றும் உடை மாற்றத்திற்கு இடம் கொண்ட மென்மையான தினசரி பை.' }
   },
   {
     name: 'Bag Model 002', price: 2200, image: '', images: [], status: 'In Stock', deliveryFee: 350,
+    colorOptions: ['Blue', 'Pink'],
     descriptions: { en: 'A spacious hospital-bag style tote with multiple compartments for organised packing.', si: 'රෝහල් බෑගයක් වගේ පෝෂිත කොටස් කිහිපයකින් යුත් ලොකු බෑගයක්.', ta: 'ஒழுங்கான பொருட்களை வைக்க பல பிரிவுகளுடன் கூடிய பரந்த மருத்துவமனை பை பாணி பை.' }
   },
-  { name: 'Bag Model 003', price: 1950, image: '', images: [], status: 'Out of Stock', deliveryFee: 350, descriptions: { en: '', si: '', ta: '' } },
-  { name: 'Bag Model 004', price: 2450, image: '', images: [], status: 'In Stock', deliveryFee: 400, descriptions: { en: '', si: '', ta: '' } },
-  { name: 'Bag Model 005', price: 2000, image: '', images: [], status: 'In Stock', deliveryFee: 350, descriptions: { en: '', si: '', ta: '' } },
-  { name: 'Bag Model 006', price: 2650, image: '', images: [], status: 'Out of Stock', deliveryFee: 400, descriptions: { en: '', si: '', ta: '' } }
+  { name: 'Bag Model 003', price: 1950, image: '', images: [], status: 'Out of Stock', deliveryFee: 350, colorOptions: [], descriptions: { en: '', si: '', ta: '' } },
+  { name: 'Bag Model 004', price: 2450, image: '', images: [], status: 'In Stock', deliveryFee: 400, colorOptions: [], descriptions: { en: '', si: '', ta: '' } },
+  { name: 'Bag Model 005', price: 2000, image: '', images: [], status: 'In Stock', deliveryFee: 350, colorOptions: [], descriptions: { en: '', si: '', ta: '' } },
+  { name: 'Bag Model 006', price: 2650, image: '', images: [], status: 'Out of Stock', deliveryFee: 400, colorOptions: [], descriptions: { en: '', si: '', ta: '' } }
 ];
 
 const BAG_ICON_SVG = `<svg viewBox="0 0 24 24" class="product-icon" aria-hidden="true">
@@ -62,7 +67,7 @@ const translations = {
     loadingProducts: 'Loading products…',
     orderNow: 'Order Now',
     outOfStock: 'Out of Stock',
-    customOrderNote: 'This bag is currently out of stock, but you can still place a custom order. Please note that the exact fabric design shown in the photo is unavailable. Send us a WhatsApp message to see and choose from the currently available material designs. Your custom order will be delivered right to your doorstep within 7 days.',
+    customOrderNote: 'This bag is out of stock right now. However, you can still request a custom order, and we will stitch a new one for your little one! Your custom-made bag will be delivered right to your doorstep within 7 days.',
     requestCustomOrder: 'Request Custom Order',
     backToShop: 'Back to shop',
     itemPriceLabel: 'Bag Price',
@@ -96,7 +101,7 @@ const translations = {
     loadingProducts: 'නිෂ්පාදන පූරණය වෙමින්…',
     orderNow: 'දැන් ඇණවුම් කරන්න',
     outOfStock: 'තොග අවසන්',
-    customOrderNote: 'දැනට මෙම බෑගයේ තොග අවසන් වී ඇත (Out of Stock). නමුත් ඔබට අවශ්‍ය නම් විශේෂ ඇණවුමක් (Custom Order) ලෙස මෙය ලබාගත හැකියි. ඡායාරූපයේ ඇති රෙදි මෝස්තරය දැනට නොමැති බව කරුණාවෙන් සලකන්න. දැනට ලබාගත හැකි රෙදි මෝස්තර බලාගැනීම සඳහා අපට WhatsApp පණිවිඩයක් එවන්න. ඔබගේ ඇණවුම දින 7ක් ඇතුළත නිවසටම ගෙනවිත් දෙනු ලැබේ.',
+    customOrderNote: 'මෙම බෑගය දැනට තොග නොමැත. නමුත් ඔබට තවමත් විශේෂ ඇණවුමක් ඉල්ලා සිටිය හැක, අපි ඔබේ දරුවා සඳහා අලුත් එකක් මසා දෙන්නෙමු! ඔබේ විශේෂ බෑගය දින 7ක් ඇතුළත ඔබේ දොරකඩටම ගෙන්වා දෙනු ලැබේ.',
     requestCustomOrder: 'විශේෂ ඇණවුමක් ඉල්ලන්න',
     backToShop: 'සාප්පුවට ආපසු',
     itemPriceLabel: 'බෑග් මිල',
@@ -130,7 +135,7 @@ const translations = {
     loadingProducts: 'பொருட்கள் ஏற்றப்படுகின்றன…',
     orderNow: 'இப்போது ஆர்டர் செய்யவும்',
     outOfStock: 'கையிருப்பு இல்லை',
-    customOrderNote: 'தற்போது இந்தப் பையின் கையிருப்பு முடிவடைந்துவிட்டது (Out of Stock). இருப்பினும், நீங்கள் விரும்பினால் ஒரு சிறப்பு ஆர்டராக (Custom order) இதனைப் பெற்றுக்கொள்ளலாம். புகைப்படத்தில் உள்ள அதே துணி வடிவமைப்பு தற்போது கைவசம் இல்லை என்பதை நினைவில் கொள்க. தற்போது கிடைக்கக்கூடிய துணி வடிவமைப்புகளைப் பார்க்க எங்களுக்கு WhatsApp மெசேஜ் அனுப்பவும். உங்கள் ஆர்டர் 7 நாட்களுக்குள் உங்கள் வீட்டு வாசலுக்கே கொண்டு வந்து சேர்க்கப்படும்.',
+    customOrderNote: 'இந்தப் பை தற்போது கையிருப்பில் இல்லை. இருப்பினும், நீங்கள் இன்னும் ஒரு தனிப்பயன் ஆர்டரை கோரலாம், நாங்கள் உங்கள் குழந்தைக்காக புதிதாக ஒன்று தைத்துத் தருவோம்! உங்கள் தனிப்பயன் பை 7 நாட்களுக்குள் உங்கள் வீட்டு வாசலுக்கே கொண்டு வரப்படும்.',
     requestCustomOrder: 'தனிப்பயன் ஆர்டரைக் கோருங்கள்',
     backToShop: 'கடைக்குத் திரும்பு',
     itemPriceLabel: 'பை விலை',
@@ -260,6 +265,11 @@ function normalizeProducts(rawRows) {
       .map((s) => (s || '').trim())
       .filter(Boolean);
 
+    const colorOptions = (r.ColorOptions || '')
+      .split(',')
+      .map((c) => c.trim())
+      .filter(Boolean);
+
     return {
       name: r.Name || 'Unnamed Bag',
       price: parseFloat(String(r.Price || '').replace(/[^0-9.]/g, '')) || 0,
@@ -267,6 +277,7 @@ function normalizeProducts(rawRows) {
       images,
       status: (r.Status || 'In Stock').trim(),
       deliveryFee,
+      colorOptions,
       descriptions: {
         en: (r.DescriptionEN || '').trim(),
         si: (r.DescriptionSI || '').trim(),
@@ -331,6 +342,7 @@ function renderProducts(products) {
       data-delivery="${product.deliveryFee}"
       data-images='${toAttrJson(product.images)}'
       data-desc='${toAttrJson(product.descriptions)}'
+      data-colors='${toAttrJson(product.colorOptions)}'
     `;
 
     const buttonHtml = isOut
@@ -373,8 +385,10 @@ productGrid.addEventListener('click', (e) => {
 
   let images = [];
   let descriptions = { en: '', si: '', ta: '' };
+  let colorOptions = [];
   try { images = JSON.parse(btn.dataset.images || '[]'); } catch (err) { /* ignore malformed data */ }
   try { descriptions = JSON.parse(btn.dataset.desc || '{}'); } catch (err) { /* ignore malformed data */ }
+  try { colorOptions = JSON.parse(btn.dataset.colors || '[]'); } catch (err) { /* ignore malformed data */ }
 
   lastFocusedElement = btn;
   openCheckout({
@@ -383,6 +397,7 @@ productGrid.addEventListener('click', (e) => {
     deliveryFee: Number(btn.dataset.delivery),
     images,
     descriptions,
+    colorOptions,
     isPreorder: btn.dataset.preorder === 'true'
   });
 });
@@ -403,6 +418,7 @@ const orderForm = document.getElementById('orderForm');
 const custName = document.getElementById('custName');
 const custAddress = document.getElementById('custAddress');
 const custPhone = document.getElementById('custPhone');
+const colorField = document.getElementById('colorField');
 const custColor = document.getElementById('custColor');
 const custNote = document.getElementById('custNote');
 
@@ -519,6 +535,19 @@ function updateCheckoutDescription() {
   checkoutDescription.hidden = !text;
 }
 
+function updateColorField() {
+  const dict = translations[currentLang];
+  const hasColors = selectedProduct.colorOptions && selectedProduct.colorOptions.length > 0;
+
+  colorField.hidden = !hasColors;
+
+  const placeholderOption = `<option value="" disabled selected data-i18n="selectColor">${escapeHtml(dict.selectColor)}</option>`;
+  const colorOptionsHtml = hasColors
+    ? selectedProduct.colorOptions.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')
+    : '';
+  custColor.innerHTML = placeholderOption + colorOptionsHtml;
+}
+
 function openCheckout(product) {
   selectedProduct = product;
   const total = product.price + product.deliveryFee;
@@ -527,6 +556,8 @@ function openCheckout(product) {
   checkoutItemPrice.textContent = `Rs. ${product.price.toLocaleString()}`;
   checkoutDeliveryFee.textContent = `Rs. ${product.deliveryFee.toLocaleString()}`;
   checkoutTotal.textContent = `Rs. ${total.toLocaleString()}`;
+
+  updateColorField();
 
   galleryImages = product.images && product.images.length ? product.images : [];
   galleryIndex = 0;
@@ -619,7 +650,8 @@ orderForm.addEventListener('submit', (e) => {
   const name = custName.value.trim();
   const address = custAddress.value.trim();
   const phone = custPhone.value.trim();
-  const color = custColor.value;
+  const hasColors = selectedProduct.colorOptions && selectedProduct.colorOptions.length > 0;
+  const color = hasColors ? custColor.value : '';
   const note = custNote.value.trim();
 
   let isValid = true;
@@ -627,7 +659,7 @@ orderForm.addEventListener('submit', (e) => {
   if (!name) { showError('name', dict.errorRequired); isValid = false; }
   if (!address) { showError('address', dict.errorRequired); isValid = false; }
   if (!/^[0-9]{9,10}$/.test(phone)) { showError('phone', dict.errorPhone); isValid = false; }
-  if (!color) { showError('color', dict.errorColor); isValid = false; }
+  if (hasColors && !color) { showError('color', dict.errorColor); isValid = false; }
 
   if (!isValid || !selectedProduct) return;
 
@@ -638,8 +670,7 @@ orderForm.addEventListener('submit', (e) => {
 `${orderType} - Ranowin Products
 --------------------------------
 Product: ${selectedProduct.name}
-Color: ${color}
-Item Price: Rs. ${selectedProduct.price.toLocaleString()}
+${color ? `Color: ${color}\n` : ''}Item Price: Rs. ${selectedProduct.price.toLocaleString()}
 Delivery: Rs. ${selectedProduct.deliveryFee.toLocaleString()}
 Total Amount: Rs. ${total.toLocaleString()}
 
