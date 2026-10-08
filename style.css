@@ -4,3 +4,19 @@ header .brand small{color:#eee4ff}.language-bar{display:flex;align-items:center;
 
 /* Use the supplied brand artwork without cropping its text or products. */
 .brand-logo{width:52px;height:52px;flex-shrink:0;object-fit:contain;display:block}.hero{grid-template-columns:.95fr 1.2fr;align-items:stretch}.hero-copy{padding:48px 34px}.hero-art{min-height:0;padding:18px;background:#ffe2e5}.hero-art:before,.hero-art:after{display:none}.hero-banner{display:block;width:100%;height:auto;object-fit:contain;border-radius:12px;box-shadow:0 12px 28px #6b3eaa18}.hero-copy h1{font-size:clamp(34px,4.4vw,56px)}@media(max-width:800px){.hero-copy{padding:30px 24px}.hero-art{padding:12px}}@media(max-width:600px){.hero{grid-template-columns:1fr}.hero-art{min-height:0;order:-1;padding:12px}.hero-copy{padding:28px 24px}.hero-copy h1{font-size:38px}.brand-logo{width:46px;height:46px}}
+
+/* Product preview and uncropped full-screen image gallery. */
+.detail .photo img{object-fit:contain}
+.photo-open{width:100%;padding:0;border:0;cursor:zoom-in;color:inherit;font:inherit}
+.photo-viewer{position:fixed;inset:0;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;background:#11101bf5;color:white;overflow:hidden}
+.photo-viewer::backdrop{background:#11101b}
+.photo-viewer[open]{display:grid;place-items:center}
+.viewer-stage{width:100%;height:100%;padding:64px 72px 70px;display:grid;place-items:center;touch-action:pan-y pinch-zoom}
+.viewer-stage img{display:block;width:100%;height:100%;min-height:0;object-fit:contain}
+.viewer-close,.viewer-prev,.viewer-next{position:absolute;z-index:2;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:50%;background:#312644d9;color:white;padding:0;width:48px;height:48px;font:34px/1 system-ui;cursor:pointer}
+.viewer-close{right:max(18px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top))}
+.viewer-prev{left:16px;top:50%;transform:translateY(-50%)}
+.viewer-next{right:16px;top:50%;transform:translateY(-50%)}
+.photo-viewer button[hidden]{display:none}
+.viewer-count{position:absolute;bottom:max(15px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);margin:0;padding:6px 16px;border-radius:30px;background:#312644d9;font-size:14px}
+@media(max-width:600px){.viewer-stage{padding:72px 12px 70px}.viewer-prev,.viewer-next{width:42px;height:42px;top:auto;bottom:max(14px,env(safe-area-inset-bottom));transform:none}.viewer-prev{left:18px}.viewer-next{right:18px}}
