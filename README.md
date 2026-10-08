@@ -4,7 +4,7 @@ Replace index.html, style.css and script.js in your existing GitHub Pages reposi
 
 ## Configuration
 
-At the top of script.js, the existing published Google Sheet URL and WhatsApp number are preserved. Set CONFIG.facebookURL to your actual Facebook page URL; the Facebook button appears when configured. The About page uses your existing Pannipitiya location.
+At the top of script.js, the existing published Google Sheet URL and WhatsApp number are preserved. CONFIG.facebookURL is configured to https://web.facebook.com/ranowinproduction. The About page uses your existing Pannipitiya location.
 
 The head in index.html contains the GA4 insertion point and your previous measurement ID. Analytics is not enabled until you insert the actual GA4 snippet.
 
@@ -19,8 +19,8 @@ ID, Name, Price, ImageLink, ImageLink2, ImageLink3, Status, DeliveryFee, Descrip
 - Status: In Stock or Out of Stock.
 - ColorOptions: Blue,Pink (comma-separated inside one cell). Leave blank if there is no colour choice. Pattern columns automatically add their matching colour.
 - Size: enter one fixed size per bag, e.g. L, XL or XXL. Customers cannot change this size. The older Sizes header is still accepted; put only one size in each cell.
-- Blue Patterns / Pink Patterns: public direct image URLs separated with | (or newlines). Empty cells mean plain colour; no extra selector is shown. Other colours are supported as plain colours.
-- ImageLink / ImageLink2 / ImageLink3: public HTTPS image URLs. Private Drive sharing pages are not image files.
+- Blue Patterns / Pink Patterns: repository-relative image paths or public direct image URLs separated with | (or newlines). Empty cells mean plain colour; no extra selector is shown. Other colours are supported as plain colours.
+- ImageLink / ImageLink2 / ImageLink3: a repository-relative filename such as 001.jpg, a relative folder path such as images/001.jpg, or a public HTTPS image URL. GitHub blob links are converted to raw image links. Private Drive sharing pages are not image files.
 - DescriptionEN / SI / TA: enter the actual features for each model in its language. Newlines are supported. Describe the main zipper pocket, back zipper pocket, two side pockets, front long pocket and any divisions, carrying handles and long shoulder strap where applicable. Features are not invented for bags with missing descriptions.
 - Prices are LKR. Empty/invalid bag prices display Price on request. Empty/invalid delivery fees use the existing Rs.350 default; set each product’s actual fee explicitly.
 - Publish the correct tab to the web as CSV. Changes may take time to appear in Google's published feed. Do not store customer details in this public sheet.
@@ -36,3 +36,10 @@ The checkout validates delivery details and opens WhatsApp with the bag, ID, siz
 ## Validation
 
 JavaScript syntax and CSV/data normalisation checks passed, including quoted commas, multiline fields, missing optional columns, safe image URLs, stock flags and duplicate IDs. Automated browser verification could not run in the supplied environment because its Chromium executable is unavailable. Before publishing, test on your phone: browse → choose bag → select colour/pattern → fill details → WhatsApp; then verify browser Back and custom orders against the live sheet.
+
+
+## October 2026 update
+
+The Home page language selector controls navigation, descriptions and checkout labels across the site. English, Sinhala and Tamil are supported, and the choice persists when local storage is available. There is no language selector inside product details. The theme uses pale blue, purple with white lettering, and pale red accents. The About page credits Vidun Damsana with telephone 075 132 8199; business orders continue to use the existing Ranowin WhatsApp number.
+
+Validation: current published CSV parsed successfully with 15 products; relative and GitHub image links, Sinhala/Tamil labels, fixed-size details, removal of detail language control, colour/pattern reset and generated WhatsApp order details checked with a simulated DOM. Visual browser verification remains to be completed.
