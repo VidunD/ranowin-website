@@ -9,7 +9,9 @@ let products=[],loadState='loading',language=readLanguage(),activeProduct=null,s
 const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeURL=v=>{try{const u=new URL(String(v).trim());return /^https?:$/.test(u.protocol)?u.href:'';}catch{return '';}};
 function imageURL(value){
- const raw=String(value||'').trim();if(!raw)return '';
+ let raw=String(value||'').trim();if(!raw)return '';
+ // Support the old published filename while Google updates the CSV.
+ if(raw==='0010.png')raw='010.png';
  // Relative filenames are resolved against the website folder, not the hash route.
  try{const url=new URL(raw,new URL('.',document.baseURI));if(!/^https?:$/.test(url.protocol))return '';
  if(url.hostname==='github.com'&&url.pathname.includes('/blob/')){url.hostname='raw.githubusercontent.com';url.pathname=url.pathname.replace('/blob/','/');url.search='';}
