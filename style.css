@@ -20,3 +20,20 @@ header .brand small{color:#eee4ff}.language-bar{display:flex;align-items:center;
 .photo-viewer button[hidden]{display:none}
 .viewer-count{position:absolute;bottom:max(15px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);margin:0;padding:6px 16px;border-radius:30px;background:#312644d9;font-size:14px}
 @media(max-width:600px){.viewer-stage{padding:72px 12px 70px}.viewer-prev,.viewer-next{width:42px;height:42px;top:auto;bottom:max(14px,env(safe-area-inset-bottom));transform:none}.viewer-prev{left:18px}.viewer-next{right:18px}}
+
+/* Clear fabric selection with large previews and persistent selection markers. */
+.material-dialog{width:min(720px,94vw);max-height:88dvh;border:0;border-radius:20px;padding:28px;background:#fff;color:var(--ink);overflow:auto;box-shadow:0 24px 80px #35264744}
+.material-dialog::backdrop{background:#20132a99}
+.material-dialog h2{font:700 23px/1.4 system-ui;padding-right:38px}
+.material-close{position:absolute;right:14px;top:12px;border:0;background:#eee5fa;border-radius:50%;width:36px;height:36px;font-size:24px}
+.material-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:15px 0}
+.material-option{position:relative;display:flex;flex-direction:column;gap:6px;align-items:center;border:3px solid var(--line);border-radius:12px;padding:8px;background:#fff;color:var(--ink);font-size:13px}
+.material-option[aria-pressed="true"]{border-color:var(--green);box-shadow:0 0 0 2px #d4b6f2;background:#f4ebff}
+.material-photo{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:1;background:#f2edf8;border-radius:7px;overflow:hidden}
+.material-photo img{width:100%;height:100%;object-fit:contain}
+.material-loading{position:absolute;background:#fffD;padding:4px 8px;font-size:12px}
+.material-photo.loaded .material-loading{display:none}
+.material-check{visibility:hidden;color:var(--green);font-weight:750}
+.material-option[aria-pressed="true"] .material-check{visibility:visible}
+.material-retry{position:absolute;border:1px solid var(--green);border-radius:8px;background:white;color:var(--green);padding:8px}
+@media(max-width:600px){.material-dialog{padding:22px 16px}.material-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
