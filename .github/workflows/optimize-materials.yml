@@ -39,7 +39,12 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "Optimize material photo previews"
-            git push origin HEAD:main
+            for attempt in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then break; fi
+              if [ "$attempt" = 3 ]; then exit 1; fi
+            done
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Request GitHub Pages rebuild
