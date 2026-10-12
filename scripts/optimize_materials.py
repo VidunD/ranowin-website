@@ -4,7 +4,7 @@ from PIL import Image, ImageOps
 import re
 ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / "materials"
-PATTERN = re.compile(r"^\d+\s+D[BP]\s+\d+\.(png|jpe?g|webp)$", re.I)
+PATTERN = re.compile(r"^\d+\s+D[A-Z]+\s+\d+\.(png|jpe?g|webp)$", re.I)
 def optimize():
     DEST.mkdir(exist_ok=True)
     expected = set()
