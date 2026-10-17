@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /backend/
+Disallow: /admin.html
+Sitemap: https://ranowin.com.lk/sitemap.xml
