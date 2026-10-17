@@ -25,3 +25,11 @@ Website changes are already in GitHub; Apps Script requires the explicit deploym
 ## Validation
 
 Run `node tests/catalog.test.cjs` and `node tests/storefront-unit.test.cjs` for backend schema/category/price/sale tests and storefront/checkout logic. They use in-memory fixtures and do not mutate the live Sheet or send WhatsApp messages. Browser rendering and the actual Apps Script runtime still require checking after deployment.
+
+## Per-product seven-day option and deleting designs
+
+In Edit product, enable **Offer custom orders within 7 days — this product only** only for products you can stitch and deliver within seven days. Disable it for items with no such service. This edits the existing CustomOrder field, defaults to OFF for new products, and never schedules an automatic restock. Existing bag settings are retained. It applies to out-of-stock designs as well as the whole product.
+
+**Delete material** removes the material's pattern choice and its quantity row after confirmation. Unmanaged existing designs also have a Delete this design button. Original Drive/GitHub photos and past Sales records are kept. Colors remain available as plain colors after their final material is deleted; edit product Colors if you also want to remove a color. If GitHub sync fails after a deletion, click Retry website sync rather than repeating deletion.
+
+If the previous category upgrade has not been installed, replace both files once using their latest complete versions. No intermediate update or password setup is required.
