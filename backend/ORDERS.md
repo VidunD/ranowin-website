@@ -63,3 +63,11 @@ The importer matches website names such as `Baby Bag 001` with Manager `ItemCode
 New order lines auto-fill the linked product UUID when you select a product. Existing draft lines with empty IDs get the saved default in the editor; saving snapshots that default. A blank historical line can also use the current mapping during export, while a nonblank line ID remains unchanged. Reopen an already-open draft after importing links. Order-specific overrides remain possible.
 
 For new products or other categories, choose the product under **Save this product link**, paste its real Manager item Key UUID and save once. Leave it blank to remove the default link. Website IDs are the mapping keys, so renaming a product does not break its saved link. Existing direct Manager IDs on saved order lines are not changed automatically when defaults change.
+
+## Clean invoice descriptions and customer names
+
+New customer exports omit Code, so Manager displays the customer's name without an order UUID prefix. Automatic linking now matches exact Name + full BillingAddress (including phone); old exports with Code equal to the original order ID remain supported. Missing/ambiguous matches are rejected. Customers already created in Manager retain their existing Code: edit that customer's Code in Manager to clear it if you want the name-only display; do not create the customer again.
+
+Invoice lines show product / color / Pattern N, with no photo URL or filename. Saving a draft snapshots the pattern number from the product's color-specific pattern list. There is also a Pattern label field for untracked designs. Historical orders without a snapshot infer the number from the current catalog; if the old design no longer exists there, its unknown number is omitted. Keep image URLs privately on the order for identifying the actual design; they are not printed on the invoice export.
+
+New orders receive RW-000001-style references, generated under the existing script lock. Internal UUIDs remain unchanged for data integrity. Existing order references remain unchanged to avoid invoice duplicates. The updated bill theme reads invoice number/reference from Manager's document fields. This theme update is separate from Apps Script deployment. Already imported invoices are not automatically changed: edit their description/theme in Manager and do not reimport them.
