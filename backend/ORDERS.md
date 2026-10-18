@@ -1,5 +1,21 @@
 # Private orders and postal receipts
 
+## Recommended workflow: print directly from Admin
+
+Save the order, confirm once after the customer confirms, then open the order and choose **Print Bill** or **Print Delivery Label**. A print preview opens inside the admin page; choose **Print / Save PDF**. Manager is optional and its controls are collapsed. No Customer UUID, inventory mapping, Manager import or installed app is needed for local bills. This is an operational invoice/receipt tracker, not automatic synchronization with Manager's accounting ledger.
+
+Print defaults follow the existing Ranowin layouts: centered company header, saved invoice date/reference, customer details and item table for the bill; From/To addresses and amount to collect for the parcel label. The delivery label's amount to collect equals goods + delivery minus recorded customer payments; postal deductions do not increase the customer's debt. Photo paths are excluded. Browser print settings default to A5 portrait; switch paper/scale as needed and disable browser headers/footers. Native browser/physical printer layout must be checked on the user's laptop.
+
+Under **Bill / delivery label settings**, edit business name, address and phone once. No customer data is sent to a printing service. Preview content stays in the page and is cleared when closed or logged out. A Draft print is explicitly watermarked and does not reduce stock. Confirmed orders get a stable local bill reference when first printed; reprints keep the same date/reference and do not deduct stock. Postal barcodes can still be saved later after handing over the parcel.
+
+### Delete a mistaken unpaid order/bill
+
+Open that order > **Delete order / bill** and type the displayed bill/order reference. This removes it from the working list and retains a private audit record, with its reference reserved. If tracked stock was deducted for this undispatched order, the existing resumable stock journal restores it once before deletion. Paid or dispatched orders cannot be deleted through this shortcut; keep their tracking/payment history. An interrupted restoration must be recovered before trying again. Deleted orders cannot be printed, exported or changed through the APIs.
+
+This button does not delete an invoice already created in the separate Manager desktop application. To remove such an invoice, open the exact invoice in Manager and use its own Edit/Delete controls after checking its customer, reference and any linked receipts. Do not delete the customer or inventory items to remove an invoice.
+
+---
+
 ## Install this upgrade
 
 1. Replace the complete Apps Script `Code.gs` and `Admin.html` with the matching files in this repository. Keep your existing Script Properties and password unchanged. Do not rerun setupAdmin_().
