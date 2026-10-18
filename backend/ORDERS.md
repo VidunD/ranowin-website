@@ -37,10 +37,10 @@ The month filter uses receipt dates; outstanding total always covers all dates. 
 
 ## Manager Desktop 26.4.30 invoice import
 
-This release exports an invoice TSV compatible in structure with the supplied Sales Invoices template. It does not connect to the installed application over the internet. The actual import must be validated in your Manager business. Back up Manager before the first test import.
+This release exports customer and invoice TSVs compatible in structure with the supplied Sales Invoices template. It does not connect to the installed application over the internet. The actual import must be validated in your Manager business. Back up Manager before the first test import.
 
-1. Create/find the customer in Manager. Copy their **Customer UUID** from Customers export / Batch Update; do not use an invoice Key. Customer creation is manual: the supplied sample describes invoices, not the Customer import schema.
-2. Save that UUID under the order's Manager invoice section.
+1. Create/find the customer in Manager. You can link the UUID manually from Customers Batch Update, or paste the imported customer export under **Link the newly imported customer automatically**. The app matches its exact order Code and saves the Customer Key. Do not use an invoice Key. Customer creation is manual: the supplied sample describes invoices, not the Customer import schema.
+2. For a manual link, save that UUID under the order's Manager invoice section. For automatic matching, use **Find & save customer UUID**. Batch Create does not return the new UUID to our app, so this export/link step is necessary.
 3. Set each order line's real Manager item code / ID while editing the draft. Alternatively configure a valid **sales Account UUID** in Manager import settings for lines without items. Do not invent IDs or use the sample customer's UUID for new customers.
 4. Configure the actual Delivery Item UUID and optional invoice Theme UUID from your own Manager data. If delivery has no item, it falls back to the configured sales Account; confirm this account treatment is appropriate in Manager.
 5. Prepare Manager import > Copy import text. In Manager use **Sales Invoices > Batch Create**, paste, Next, and review customer, quantities, merchandise total, delivery, dates, and printed theme before completing the creation. Do not paste it into Batch Update.
@@ -51,3 +51,5 @@ The export creates an invoice only. It does not record Manager payments, automat
 ## Validation performed
 
 Node backend tests cover authentication boundaries, separate private storage, multi-item totals, material/product stock priority, duplicate and stale actions, dispatch, partial receipts, fee split, payment voiding, overpayment rejection, Manager TSV construction, imported flag, return stock once and interrupted stock recovery. Existing catalog and cart regression tests pass. Admin JavaScript syntax, initial handlers and static element IDs were checked. The Apps Script live deployment, authorization prompts, rendered browser layout, actual postal statements and Manager import/printing must be checked in the owner's environment.
+
+Customer import includes Name, Code, BillingAddress, DeliveryAddress and Inactive from the supplied Customer template. Phone is included in the addresses because the template only exposes legacy telephone fields. Currency, control account and other optional values use Manager defaults. Review those defaults before creating the customer. Import text uses quoted multiline TSV; copy it directly without hand-editing quotes. Exact Code matching rejects missing or duplicate matches, malformed quoted text and invalid Customer Keys. Imported customer data is not retained beyond the matching UUID; the pasted export is cleared when the order view refreshes.
