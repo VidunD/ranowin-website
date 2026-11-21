@@ -37,7 +37,8 @@ function requireSuper_(token){const a=auth_(token);if(a.role!=='SUPER_ADMIN')thr
 function categoryNames_(){const s=DB_().getSheetByName('Categories');return s.getLastRow()<2?[]:s.getRange(2,1,s.getLastRow()-1,2).getValues().filter(r=>r[1]===true).map(r=>String(r[0]));}
 function products_(){const s=DB_().getSheetByName('Products');if(s.getLastRow()<2)return [];return s.getRange(2,1,s.getLastRow()-1,11).getValues().map(r=>({id:r[0],name:r[1],category:r[2],description:r[3],images:json_(r[4],[]),colors:json_(r[5],[]),sizes:json_(r[6],['S','M','L','XL','2XL']),basePrice:Number(r[7])||0,active:r[8]===true,createdAt:r[9],updatedAt:r[10]}));}
 function json_(v,f){try{return JSON.parse(v||'')}catch(e){return f;}}
-function apparelStaffCategories_(){return ['T-Shirts','Hoodies','Shorts','Sports Bottoms','Caps'];}\nfunction getAdminData(token){const a=auth_(token),allowed=a.role==='SUPER_ADMIN'?categoryNames_():apparelStaffCategories_().filter(c=>categoryNames_().includes(c));return {role:a.role,email:a.email,categories:allowed,products:products_().filter(p=>allowed.includes(p.category))};}
+function apparelStaffCategories_(){return ['T-Shirts','Hoodies','Shorts','Sports Bottoms','Caps'];}
+function getAdminData(token){const a=auth_(token),allowed=a.role==='SUPER_ADMIN'?categoryNames_():apparelStaffCategories_().filter(c=>categoryNames_().includes(c));return {role:a.role,email:a.email,categories:allowed,products:products_().filter(p=>allowed.includes(p.category))};}
 function saveProduct(token,p){
   const a=auth_(token);p=p||{};const name=String(p.name||'').trim(),cat=String(p.category||'').trim();
   if(!name||name.length>120)throw Error('Enter a product name.');if(!categoryNames_().includes(cat))throw Error('Unknown category.');
