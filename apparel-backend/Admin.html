@@ -73,6 +73,23 @@
 </form>
 </section>
 
+<section id="reports">
+<h2>Summary Report &amp; Charts</h2>
+<div class="row">
+<label>Report year<input id="reportYear" type="number" min="2020" max="2100"></label>
+<div style="align-self:end"><button type="button" id="loadReport">Load Summary</button></div>
+</div>
+<div id="reportCards" class="grid"></div>
+<h3 class="section-title">Monthly received income</h3><div id="receivedChart"></div>
+<h3 class="section-title">Monthly outstanding balance</h3><div id="outstandingChart"></div>
+<div id="monthlyTable"></div>
+<p class="hint">Reports use recorded payments only for received income. Delivery fees are shown separately. Outstanding amounts are not profit.</p>
+<button type="button" id="backupNow">Backup Now (CSV + PDF + Google Sheet)</button>
+<button type="button" id="dailyBackup">Enable Automatic Daily Backup</button>
+<p id="reportStatus" class="status"></p>
+<div id="backupLinks"></div>
+</section>
+
 <section id="superTools" class="hidden">
 <h2>Super Admin controls</h2>
 <form id="categoryForm">
@@ -192,6 +209,44 @@ $('categoryManager').onclick=async e=>{
   try{data=await call('deleteCategory',session.token,oldName);if(activeCategory===oldName)activeCategory=data.categories[0]||'';draw();alert('Category deleted.');}catch(error){alert(error.message||String(error));}
  }
 };
+
+function money(v){return 'LKR '+Number(v||0).toLocaleString('en-LK',{maximumFractionDigits:2});}
+function drawBars(target,months,key){
+ const max=Math.max(1,...months.map(x=>Number(x[key])||0));
+ $(target).innerHTML=months.map(x=>'<div style="display:grid;grid-template-columns:52px 1fr 130px;gap:8px;align-items:center;margin:7px 0"><span>'+esc(x.label)+'</span><div style="height:18px;background:#eee9f4;border-radius:8px;overflow:hidden"><div style="height:18px;width:'+Math.max(0,((Number(x[key])||0)/max)*100)+'%;background:#68429a;border-radius:8px"></div></div><strong style="font-size:12px;text-align:right">'+money(x[key])+'</strong></div>').join('');
+}
+async function loadReport(){
+ $('reportStatus').textContent='Loading report...';$('backupLinks').innerHTML='';
+ try{
+  const report=await call('getApparelSummary',session.token,Number($('reportYear').value));
+  const t=report.totals;
+  $('reportCards').innerHTML=[
+   ['Orders',t.orders],['Goods sales',money(t.goodsSales)],['Delivery fees',money(t.deliveryCharged)],
+   ['Payments received',money(t.received)],['Outstanding',money(t.outstanding)]
+  ].map(x=>'<article class="product"><span class="muted">'+esc(x[0])+'</span><h2>'+esc(x[1])+'</h2></article>').join('');
+  drawBars('receivedChart',report.months,'received');
+  drawBars('outstandingChart',report.months,'outstanding');
+  $('monthlyTable').innerHTML='<div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr>'+['Month','Orders','Goods sales','Delivery','Received','Outstanding'].map(x=>'<th style="text-align:left;padding:9px;border-bottom:1px solid #ddd">'+x+'</th>').join('')+'</tr></thead><tbody>'+report.months.map(x=>'<tr>'+[x.label,x.orders,money(x.goodsSales),money(x.deliveryCharged),money(x.received),money(x.outstanding)].map(v=>'<td style="padding:9px;border-bottom:1px solid #eee">'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+  $('reportStatus').textContent='Report loaded.';
+ }catch(error){$('reportStatus').textContent=error.message||String(error);}
+}
+$('reportYear').value=new Date().getFullYear();
+$('loadReport').onclick=loadReport;
+$('backupNow').onclick=async()=>{
+ $('reportStatus').textContent='Creating Drive backup...';$('backupLinks').innerHTML='';
+ try{
+  const r=await call('runApparelBackup_',session.token);
+  $('reportStatus').textContent=r.message;
+  $('backupLinks').innerHTML='<p><a target="_blank" rel="noopener" href="'+esc(r.folderUrl)+'">Open Drive Backup Folder</a></p><p><a target="_blank" rel="noopener" href="'+esc(r.reportUrl)+'">Open Summary Google Sheet</a></p><p><a target="_blank" rel="noopener" href="'+esc(r.pdfUrl)+'">Open PDF Report</a></p>';
+  await loadReport();
+ }catch(error){$('reportStatus').textContent=error.message||String(error);}
+};
+$('dailyBackup').onclick=async()=>{
+ $('reportStatus').textContent='Enabling daily backup...';
+ try{$('reportStatus').textContent=await call('enableApparelDailyBackup',session.token);}
+ catch(error){$('reportStatus').textContent=error.message||String(error);}
+};
+
 $('logout').onclick=async()=>{try{if(session)await call('logout',session.token);}finally{location.reload();}};
 </script>
 </body>
