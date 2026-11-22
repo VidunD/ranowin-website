@@ -47,18 +47,18 @@ function apparelMonthlySummary_(year) {
   }
   const paidByOrder = {};
   payments.forEach(p => {
+    const goods = apparelMoney_(p.GoodsAmount);
+    const delivery = apparelMoney_(p.DeliveryAmount);
+    const amount = apparelMoney_(p.Amount) || goods+delivery;
+    const oid = String(p.OrderID || '');
+    if (oid) paidByOrder[oid] = (paidByOrder[oid] || 0) + amount;
     const d = apparelDate_(p.PaymentDate);
     if (!d || d.getFullYear() !== year) return;
     const key = Utilities.formatDate(d,Session.getScriptTimeZone(),'yyyy-MM');
     if (!months[key]) return;
-    const goods = apparelMoney_(p.GoodsAmount);
-    const delivery = apparelMoney_(p.DeliveryAmount);
-    const amount = apparelMoney_(p.Amount) || goods+delivery;
     months[key].receivedGoods += goods;
     months[key].receivedDelivery += delivery;
     months[key].received += amount;
-    const oid = String(p.OrderID || '');
-    if (oid) paidByOrder[oid] = (paidByOrder[oid] || 0) + amount;
   });
   let totalOrders=0,totalGoods=0,totalDelivery=0,totalReceived=0,totalOutstanding=0;
   orders.forEach(o => {
@@ -100,7 +100,7 @@ function apparelWriteReportWorkbook_(summary) {
   const db=apparelReportDb_();
   let s=db.getSheetByName('Apparel Summary'); if(!s)s=db.insertSheet('Apparel Summary');
   let m=db.getSheetByName('Monthly Data'); if(!m)m=db.insertSheet('Monthly Data');
-  [s,m].forEach(sh=>{sh.clear();sh.getCharts().forEach(c=>sh.removeChart(c));});
+  [s,m].forEach(sh=>{sh.getCharts().forEach(c=>sh.removeChart(c));sh.getDataRange().breakApart();sh.clear();});
   s.getRange('A1:B1').merge().setValue('RANOWIN APPAREL — SUMMARY REPORT').setFontSize(16).setFontWeight('bold');
   s.getRange('A2:B2').merge().setValue('Year: '+summary.year+' | Generated: '+new Date()).setFontColor('#666666');
   s.getRange(4,1,5,2).setValues([
