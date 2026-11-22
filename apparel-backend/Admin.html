@@ -235,7 +235,7 @@ $('loadReport').onclick=loadReport;
 $('backupNow').onclick=async()=>{
  $('reportStatus').textContent='Creating Drive backup...';$('backupLinks').innerHTML='';
  try{
-  const r=await call('runApparelBackup_',session.token);
+  const r=await call('runApparelBackup',session.token);
   $('reportStatus').textContent=r.message;
   $('backupLinks').innerHTML='<p><a target="_blank" rel="noopener" href="'+esc(r.folderUrl)+'">Open Drive Backup Folder</a></p><p><a target="_blank" rel="noopener" href="'+esc(r.reportUrl)+'">Open Summary Google Sheet</a></p><p><a target="_blank" rel="noopener" href="'+esc(r.pdfUrl)+'">Open PDF Report</a></p>';
   await loadReport();
