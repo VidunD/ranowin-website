@@ -56,5 +56,34 @@ function saveProduct(token,p){
 }
 function deleteProduct(token,id){const a=auth_(token),all=products_(),ix=all.findIndex(p=>p.id===id);if(ix<0)throw Error('Product not found.');if(a.role!=='SUPER_ADMIN'&&!['T-Shirts','Hoodies','Shorts','Sports Bottoms','Caps'].includes(all[ix].category))throw Error('Access denied.');DB_().getSheetByName('Products').deleteRow(ix+2);return getAdminData(token);}
 function addCategory(token,name){requireSuper_(token);name=String(name||'').trim();if(!name||name.length>80)throw Error('Enter a category name.');if(categoryNames_().some(x=>x.toLowerCase()===name.toLowerCase()))throw Error('Category already exists.');DB_().getSheetByName('Categories').appendRow([name,true]);return getAdminData(token);}
+
+function renameCategory(token,oldName,newName){
+  requireSuper_(token);
+  oldName=String(oldName||'').trim();newName=String(newName||'').trim();
+  if(!oldName||!newName||newName.length>80)throw Error('Enter a valid category name (1–80 characters).');
+  if(oldName===newName)throw Error('The new name is the same as the current name.');
+  const db=DB_(),cs=db.getSheetByName('Categories'),last=cs.getLastRow();
+  if(last<2)throw Error('Category not found.');
+  const rows=cs.getRange(2,1,last-1,2).getValues(),ix=rows.findIndex(r=>String(r[0])===oldName&&r[1]===true);
+  if(ix<0)throw Error('Active category not found.');
+  if(rows.some((r,i)=>i!==ix&&r[1]===true&&String(r[0]).toLowerCase()===newName.toLowerCase()))throw Error('A category with that name already exists.');
+  cs.getRange(ix+2,1).setValue(newName);
+  const ps=db.getSheetByName('Products'),n=ps.getLastRow();
+  if(n>1){const vals=ps.getRange(2,1,n-1,11).getValues();let changed=false;vals.forEach(r=>{if(String(r[2])===oldName){r[2]=newName;r[10]=new Date().toISOString();changed=true;}});if(changed)ps.getRange(2,1,vals.length,11).setValues(vals);}
+  return getAdminData(token);
+}
+function deleteCategory(token,name){
+  requireSuper_(token);
+  name=String(name||'').trim();if(!name)throw Error('Category name is required.');
+  const db=DB_(),cs=db.getSheetByName('Categories'),last=cs.getLastRow();
+  if(last<2)throw Error('Category not found.');
+  const rows=cs.getRange(2,1,last-1,2).getValues(),ix=rows.findIndex(r=>String(r[0])===name&&r[1]===true);
+  if(ix<0)throw Error('Active category not found.');
+  const ps=db.getSheetByName('Products'),n=ps.getLastRow();
+  if(n>1){const vals=ps.getRange(2,1,n-1,11).getValues();const count=vals.filter(r=>String(r[2])===name).length;if(count)throw Error('Cannot delete this category: '+count+' product(s) still use it. Move or delete those products first.');}
+  cs.getRange(ix+2,2).setValue(false);
+  return getAdminData(token);
+}
+
 function savePricing(token,pricing){const a=auth_(token);if(a.role!=='SUPER_ADMIN')throw Error('Only Super Admin can edit global pricing.');const s=DB_().getSheetByName('Settings');if(s.getLastRow()===0)s.appendRow(['Key','Value']);Object.keys(pricing||{}).forEach(k=>{const key='PRICE_'+k.replace(/[^A-Z0-9_]/gi,'_').toUpperCase(),n=Number(pricing[k]);if(!Number.isFinite(n)||n<0||n>10000000)throw Error('Invalid price.');const vals=s.getLastRow()>1?s.getRange(2,1,s.getLastRow()-1,2).getValues():[],i=vals.findIndex(r=>r[0]===key);if(i<0)s.appendRow([key,n]);else s.getRange(i+2,2).setValue(n);});return 'Pricing saved.';}
 function logout(token){CacheService.getScriptCache().remove('apparel:'+hash_(String(token||'')));return true;}
