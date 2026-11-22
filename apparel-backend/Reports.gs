@@ -113,7 +113,17 @@ function recordApparelPayment(token, input) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
+    const latestPayments = apparelRowsAsObjects_(sheets.payments);
+    const paidBefore = latestPayments.filter(p=>String(p.OrderID||'')===orderId).reduce((sum,p)=>sum+apparelMoney_(p.Amount),0);
+    const goodsDue = apparelMoney_(order.GoodsTotal !== '' && order.GoodsTotal != null ? order.GoodsTotal : order.Total);
+    const totalDue = goodsDue + apparelMoney_(order.DeliveryFee);
+    if (amount > Math.max(0,totalDue-paidBefore)+0.01) throw new Error('Payment exceeds the remaining order balance.');
     sheets.payments.appendRow(['PAY-'+Utilities.getUuid(),orderId,date,amount,goods,delivery,method,note]);
+    const paidAfter = paidBefore + amount;
+    const paymentStatus = paidAfter >= totalDue-0.01 ? 'Paid' : (paidAfter > 0 ? 'Partially Paid' : 'Unpaid');
+    const orderMap = headerMap_(sheets.orders);
+    const orderIndex = orderRows.findIndex(o=>String(o.ID||'')===orderId);
+    if (orderMap.PaymentStatus !== undefined && orderIndex >= 0) sheets.orders.getRange(orderIndex+2,orderMap.PaymentStatus+1).setValue(paymentStatus);
   } finally { lock.releaseLock(); }
   return {success:true,message:'Payment saved successfully.'};
 }
