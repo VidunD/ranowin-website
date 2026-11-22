@@ -90,6 +90,33 @@ function apparelMonthlySummary_(year) {
   });
   return {year:year,months:Object.keys(months).sort().map(k=>months[k]),totals:{orders:totalOrders,goodsSales:Math.round(totalGoods*100)/100,deliveryCharged:Math.round(totalDelivery*100)/100,received:Math.round(totalReceived*100)/100,outstanding:Math.round(totalOutstanding*100)/100}};
 }
+function recordApparelPayment(token, input) {
+  auth_(token);
+  input = input || {};
+  const sheets = apparelReportHeaders_();
+  const orderId = String(input.orderId || '').trim();
+  if (!orderId) throw new Error('Enter an Order ID.');
+  const orderRows = apparelRowsAsObjects_(sheets.orders);
+  const order = orderRows.find(o => String(o.ID || '') === orderId);
+  if (!order) throw new Error('Order ID was not found in the Apparel Orders sheet.');
+  const status = String(order.Status || '').toLowerCase();
+  if (status === 'cancelled' || status === 'returned') throw new Error('Cannot record a payment for a cancelled or returned order.');
+  const goods = apparelMoney_(input.goodsAmount);
+  const delivery = apparelMoney_(input.deliveryAmount);
+  const amount = apparelMoney_(input.amount);
+  if (!(amount > 0) || goods < 0 || delivery < 0) throw new Error('Enter a valid payment amount.');
+  if (Math.abs(goods + delivery - amount) > 0.01) throw new Error('Goods amount + delivery amount must equal the payment amount.');
+  const date = apparelDate_(input.paymentDate || new Date());
+  if (!date) throw new Error('Enter a valid payment date.');
+  const method = String(input.method || 'Cash').slice(0,40);
+  const note = String(input.note || '').slice(0,500);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    sheets.payments.appendRow(['PAY-'+Utilities.getUuid(),orderId,date,amount,goods,delivery,method,note]);
+  } finally { lock.releaseLock(); }
+  return {success:true,message:'Payment saved successfully.'};
+}
 function getApparelSummary(token, year) {
   auth_(token);
   const y = Number(year) || new Date().getFullYear();
