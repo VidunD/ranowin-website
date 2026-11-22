@@ -153,7 +153,7 @@ function apparelCreatePdfBackup_(folder,summary) {
   file.setTrashed(true);
   return pdf.getUrl();
 }
-function runApparelBackup_(token) {
+function runApparelBackup(token) {
   auth_(token);
   return apparelRunBackupCore_();
 }
@@ -169,8 +169,8 @@ function apparelRunBackupCore_() {
 }
 function enableApparelDailyBackup(token) {
   auth_(token);
-  const exists=ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='apparelDailyBackup_');
-  if(!exists) ScriptApp.newTrigger('apparelDailyBackup_').timeBased().everyDays(1).atHour(2).create();
+  const exists=ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='apparelDailyBackup');
+  if(!exists) ScriptApp.newTrigger('apparelDailyBackup').timeBased().everyDays(1).atHour(2).create();
   return 'Automatic daily backup enabled (around 2:00 AM, script time zone).';
 }
-function apparelDailyBackup_() { return apparelRunBackupCore_(); }
+function apparelDailyBackup() { return apparelRunBackupCore_(); }
