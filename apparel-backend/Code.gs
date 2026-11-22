@@ -28,6 +28,7 @@ function setupApparel_(){
   p.deleteProperty('SUPER_ADMIN_PASSWORD');p.deleteProperty('APPAREL_ADMIN_PASSWORD');
   return 'Setup complete. Existing product rows were preserved; stock and size-chart columns are ready.';
 }
+function migrateApparelStockAndSizeCharts_(){const s=DB_().getSheetByName('Products');if(!s)throw Error('Products sheet not found. Run setupApparel_ first.');ensureHeaders_(s,['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON']);return 'Migration complete. Existing products preserved; StockJSON, SizeChartImage and SizeChartJSON columns are ready.';}
 function json_(v,f){try{return JSON.parse(v||'')}catch(e){return f;}}
 function headerMap_(sheet){const h=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];const m={};h.forEach((v,i)=>m[String(v)]=i);return m;}
 function products_(){
