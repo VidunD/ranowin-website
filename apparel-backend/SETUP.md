@@ -50,3 +50,25 @@ The public read-only catalogue endpoint is /exec?action=catalog. It returns acti
 - The apparel admin account is separate from the Baby Bag admin login.
 - The public catalogue endpoint is read-only. Do not store customer design files in a public repository.
 - This backend currently manages catalogue data and per-size stock values. It does not yet decrement stock automatically when a customer places an order; that requires connecting the apparel order submission flow to a server-side stock-reservation function.
+
+## 7. Summary reports and Google Drive backups
+Add the new **Reports.gs** file from this folder to the same Apps Script project. It is a separate module and does not replace Code.gs.
+
+The Admin page adds a **Summary Report & Charts** section:
+- Monthly orders and goods sales
+- Delivery fees charged (kept separate from goods sales)
+- Payments received, based on payment dates
+- Outstanding balances
+- Monthly received-income and outstanding-balance charts
+
+The reporting workbook is written to the separate reporting spreadsheet:
+- Default spreadsheet: the existing Ranowin Apparel reporting spreadsheet
+- Optional Script Property: `APPAREL_REPORT_SHEET_ID` (spreadsheet ID only)
+
+The first **Backup Now** action creates a Google Drive folder named **Ranowin Apparel Backups**, saves timestamped Orders and Payments CSV files, creates a PDF summary, and refreshes the reporting workbook with monthly data and charts. The first run asks Google for the required Sheets, Drive and Docs permissions.
+
+To enable scheduled backups, sign in as Admin and click **Enable Automatic Daily Backup** once. The Apps Script time trigger then runs the backup at approximately 2:00 AM in the project time zone.
+
+The reporting module appends `DeliveryFee`, `GoodsTotal`, and `PaymentStatus` headers to the existing Orders sheet and creates a separate Payments sheet if it does not exist. Existing order rows and product data are preserved. Received-income totals count payments by their payment dates; outstanding balances subtract all recorded payments linked to each order. Record goods and delivery allocations in `GoodsAmount` and `DeliveryAmount` for the split totals to be accurate.
+
+After adding Reports.gs and updating Admin.html, deploy the web app with **Deploy → Manage deployments → Edit → New version → Deploy**.
