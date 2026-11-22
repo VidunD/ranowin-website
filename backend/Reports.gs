@@ -86,7 +86,7 @@ function bagCreatePdf_(d,folder){
   const table=[['Month','Orders','Goods','Delivery','Old bills','Deductions','Net cash']];
   d.months.forEach(m=>table.push([m.month,String(m.orders),m.goods.toFixed(2),m.delivery.toFixed(2),m.legacy.toFixed(2),m.deductions.toFixed(2),m.received.toFixed(2)]));
   body.appendTable(table);doc.saveAndClose();
-  const file=folder.createFile(DriveApp.getFileById(doc.getId()).getBlob().setName('Baby-Bags-Summary-'+Utilities.formatDate(new Date(),'Asia/Colombo','yyyyMMdd-HHmm')+'.pdf'));
+  const file=folder.createFile(DriveApp.getFileById(doc.getId()).getAs(MimeType.PDF).setName('Baby-Bags-Summary-'+Utilities.formatDate(new Date(),'Asia/Colombo','yyyyMMdd-HHmm')+'.pdf'));
   DriveApp.getFileById(doc.getId()).setTrashed(true);return file;
 }
 function bagBackupCore_(){
