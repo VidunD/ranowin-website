@@ -80,6 +80,19 @@
 <div style="align-self:end"><button type="button" id="loadReport">Load Summary</button></div>
 </div>
 <div id="reportCards" class="grid"></div>
+<h3 class="section-title">Record a payment</h3>
+<form id="paymentForm">
+<div class="row">
+<label>Order ID<input id="paymentOrderId" required placeholder="Enter Apparel Order ID"></label>
+<label>Payment date<input id="paymentDate" type="date" required></label>
+<label>Total received (LKR)<input id="paymentAmount" type="number" min="0.01" step=".01" required></label>
+<label>Goods amount (LKR)<input id="paymentGoods" type="number" min="0" step=".01" required></label>
+<label>Delivery amount (LKR)<input id="paymentDelivery" type="number" min="0" step=".01" value="0" required></label>
+<label>Payment method<select id="paymentMethod"><option>Cash</option><option>Bank Transfer</option><option>Card</option><option>Other</option></select></label>
+</div>
+<label>Note (optional)<input id="paymentNote" maxlength="500"></label>
+<button type="submit">Save Payment</button>
+</form>
 <h3 class="section-title">Monthly received income</h3><div id="receivedChart"></div>
 <h3 class="section-title">Monthly outstanding balance</h3><div id="outstandingChart"></div>
 <div id="monthlyTable"></div>
@@ -210,6 +223,19 @@ $('categoryManager').onclick=async e=>{
  }
 };
 
+$('paymentDate').value=new Date().toISOString().slice(0,10);
+$('paymentForm').onsubmit=async e=>{
+ e.preventDefault();
+ try{
+  const r=await call('recordApparelPayment',session.token,{
+   orderId:$('paymentOrderId').value.trim(),paymentDate:$('paymentDate').value,
+   amount:$('paymentAmount').value,goodsAmount:$('paymentGoods').value,
+   deliveryAmount:$('paymentDelivery').value,method:$('paymentMethod').value,note:$('paymentNote').value
+  });
+  alert(r.message);$('paymentForm').reset();$('paymentDate').value=new Date().toISOString().slice(0,10);
+  $('paymentDelivery').value='0';await loadReport();
+ }catch(error){alert(error.message||String(error));}
+};
 function money(v){return 'LKR '+Number(v||0).toLocaleString('en-LK',{maximumFractionDigits:2});}
 function drawBars(target,months,key){
  const max=Math.max(1,...months.map(x=>Number(x[key])||0));
