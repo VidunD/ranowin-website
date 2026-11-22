@@ -1,19 +1,198 @@
-<!doctype html><html><head><base target="_top"><style>
-*{box-sizing:border-box}body{font:15px Arial,sans-serif;background:#f4f2f8;color:#242033;margin:0;padding:22px}main{max-width:1100px;margin:auto}h1{color:#43246f}section,.panel{background:white;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #24123a12}label{display:block;margin:10px 0;font-weight:600}input,textarea,select{display:block;width:100%;padding:11px;border:1px solid #c9c3d4;border-radius:8px;margin-top:5px;font:inherit}button{padding:10px 15px;border:0;border-radius:8px;background:#55318a;color:white;cursor:pointer;margin:5px 5px 5px 0}button.danger{background:#a52f46}.muted{color:#696274}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{background:#e8e1f1;color:#39215b}.tabs button.active{background:#55318a;color:white}.product{border:1px solid #ddd6e7;padding:12px;border-radius:10px}.hidden{display:none}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:650px){body{padding:10px}.row{grid-template-columns:1fr}}
-</style></head><body><main><h1>Ranowin Apparel Admin</h1><p class="muted">Separate apparel workspace · role-protected backend</p><section id="login"><form id="loginForm"><label>Admin email<input id="email" type="email" required></label><label>Password<input id="password" type="password" required></label><button>Sign in</button></form><p id="status"></p></section><div id="app" class="hidden"><section><span id="identity"></span><button id="logout" style="float:right">Log out</button><h2>Category workspaces</h2><div id="tabs" class="tabs"></div></section><section id="workspace"><h2 id="heading">Products</h2><button id="new">+ Add product</button><div id="products" class="grid"></div><form id="editor" class="hidden"><h3 id="formTitle">Product</h3><input id="pid" type="hidden"><label>Product name<input id="name" required maxlength="120"></label><label>Category<select id="category"></select></label><label>Base price (LKR)<input id="price" type="number" min="0" step=".01" required></label><label>Colours (comma separated)<input id="colors" placeholder="Black, White, Navy"></label><label>Sizes (comma separated)<input id="sizes" value="S, M, L, XL, 2XL"></label><label>Image URLs (one HTTPS URL per line)<textarea id="images" rows="3"></textarea></label><label>Description<textarea id="description" rows="3"></textarea></label><label><input id="active" type="checkbox" checked style="display:inline;width:auto"> Visible on website</label><button>Save product</button><button type="button" id="cancel">Cancel</button></form></section><section id="superTools" class="hidden"><h2>Super Admin controls</h2><form id="categoryForm"><label>Create new category<input id="newCategory" required maxlength="80" placeholder="e.g. Caps"></label><button>Add category workspace</button></form><h3>Manage categories</h3><div id="categoryManager" class="grid"></div><p class="muted">Only Super Admin can create, rename or delete categories. Categories containing products cannot be deleted.</p></section></div></main><script>
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}body{font:15px Arial,sans-serif;background:#f4f2f8;color:#242033;margin:0;padding:22px}main{max-width:1120px;margin:auto}h1{color:#43246f}section,.panel{background:#fff;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #24123a12}label{display:block;margin:10px 0;font-weight:600}input,textarea,select{display:block;width:100%;padding:11px;border:1px solid #c9c3d4;border-radius:8px;margin-top:5px;font:inherit}input[type=checkbox]{display:inline;width:auto}button{padding:10px 15px;border:0;border-radius:8px;background:#55318a;color:white;cursor:pointer;margin:5px 5px 5px 0}button.danger{background:#a52f46}.muted{color:#696274}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{background:#e8e1f1;color:#39215b}.tabs button.active{background:#55318a;color:#fff}.product{border:1px solid #ddd6e7;padding:12px;border-radius:10px}.hidden{display:none!important}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stock-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.stock-cell{border:1px solid #ddd6e7;border-radius:9px;padding:10px}.stock-cell label{margin:0}.stock-cell input{margin-top:7px}.hint{font-size:12px;color:#696274;font-weight:400}.section-title{margin:22px 0 5px;color:#43246f}.product-meta{font-size:13px;color:#696274}.preview{max-width:220px;max-height:180px;object-fit:contain;border:1px solid #ddd6e7;border-radius:8px;margin-top:8px}.status{color:#a52f46;white-space:pre-wrap}.pill{display:inline-block;background:#eee7f8;border-radius:20px;padding:4px 9px;font-size:12px}.hidden{display:none!important}@media(max-width:650px){body{padding:10px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Ranowin Apparel Admin</h1>
+<p class="muted">Manage products, stock by size and customer size guides.</p>
+
+<section id="login">
+<form id="loginForm">
+<label>Admin email<input id="email" type="email" required autocomplete="username"></label>
+<label>Password<input id="password" type="password" required autocomplete="current-password"></label>
+<button type="submit">Sign in</button>
+</form>
+<p id="status" class="status"></p>
+</section>
+
+<div id="app" class="hidden">
+<section>
+<span id="identity"></span>
+<button id="logout" style="float:right">Log out</button>
+<h2>Category workspaces</h2>
+<div id="tabs" class="tabs"></div>
+</section>
+
+<section id="workspace">
+<h2 id="heading">Products</h2>
+<button id="new">+ Add product</button>
+<div id="products" class="grid"></div>
+
+<form id="editor" class="hidden">
+<h3 id="formTitle">Product</h3>
+<input id="pid" type="hidden">
+
+<label>Product name<input id="name" required maxlength="120"></label>
+<label>Category<select id="category"></select></label>
+<label>Base price (LKR)<input id="price" type="number" min="0" step=".01" required></label>
+<label>Colours (comma separated)<input id="colors" placeholder="Black, White, Navy"></label>
+<label>Available sizes (comma separated)
+<input id="sizes" value="S, M, L, XL, 2XL">
+<span class="hint">Example: S, M, L, XL. Stock quantities below are saved separately for each size.</span>
+</label>
+
+<h3 class="section-title">Stock quantity per size</h3>
+<p class="hint">Set 0 when a size is unavailable. Customers should only be able to choose sizes with stock above zero.</p>
+<div id="stockEditor" class="stock-grid"></div>
+
+<h3 class="section-title">Size chart</h3>
+<label>Size chart image URL (HTTPS)
+<input id="sizeChartImage" type="url" placeholder="https://.../size-chart.jpg">
+<span class="hint">Add an image URL if you have a size-chart picture. Leave blank if not needed.</span>
+</label>
+<img id="chartPreview" class="preview hidden" alt="Size chart preview">
+
+<label>Measurements table
+<textarea id="sizeChartRows" rows="5" placeholder="S,36,26,30,36&#10;M,38,27,32,38&#10;L,40,28,34,40"></textarea>
+<span class="hint">One size per line: Size, Chest, Length, Waist, Hip. Example: M,38,27,32,38. Measurements can be in inches or cm, but use the same unit for the whole product.</span>
+</label>
+
+<h3 class="section-title">Product details</h3>
+<label>Image URLs (one HTTPS URL per line)<textarea id="images" rows="3"></textarea></label>
+<label>Description<textarea id="description" rows="3"></textarea></label>
+<label><input id="active" type="checkbox" checked> Visible on website</label>
+<button type="submit">Save product</button>
+<button type="button" id="cancel">Cancel</button>
+</form>
+</section>
+
+<section id="superTools" class="hidden">
+<h2>Super Admin controls</h2>
+<form id="categoryForm">
+<label>Create new category<input id="newCategory" required maxlength="80" placeholder="e.g. Caps"></label>
+<button type="submit">Add category workspace</button>
+</form>
+<h3>Manage categories</h3>
+<div id="categoryManager" class="grid"></div>
+<p class="muted">Only Super Admin can create, rename or delete categories. Categories containing products cannot be deleted.</p>
+</section>
+</div>
+</main>
+
+<script>
+'use strict';
 let session=null,data=null,activeCategory='';
 const $=id=>document.getElementById(id);
-function call(name,...args){return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[name](...args));}
-function status(s){$('status').textContent=s;}
+function call(name,...args){return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args));}
+function status(message){$('status').textContent=message;}
+function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function splitList(value){return String(value||'').split(',').map(x=>x.trim()).filter(Boolean);}
+function parseChart(value){return String(value||'').split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const a=line.split(',').map(x=>x.trim());return {size:a[0]||'',chest:a[1]||'',length:a[2]||'',waist:a[3]||'',hip:a[4]||''};}).filter(x=>x.size);}
+function chartText(rows){return (rows||[]).map(x=>[x.size,x.chest,x.length,x.waist,x.hip].join(',')).join('\n');}
+function currentStockInputs(){const result={};document.querySelectorAll('[data-stock-size]').forEach(input=>{result[input.dataset.stockSize]=input.value;});return result;}
+function renderStockInputs(sizes,stock){
+ const values=stock||{};
+ $('stockEditor').innerHTML=sizes.map(size=>'<div class="stock-cell"><label>Size '+esc(size)+'<input type="number" min="0" max="1000000" step="1" data-stock-size="'+esc(size)+'" value="'+esc(values[size]===undefined?0:values[size])+'" required></label></div>').join('')||'<p class="muted">Add sizes above to enter stock.</p>';
+}
+function sizesChanged(){
+ const previous=currentStockInputs();
+ renderStockInputs(splitList($('sizes').value),previous);
+}
 async function refresh(){data=await call('getAdminData',session.token);draw();}
-function draw(){ $('identity').textContent=session.email+' · '+session.role;$('superTools').classList.toggle('hidden',session.role!=='SUPER_ADMIN');const cats=data.categories;if(!cats.includes(activeCategory))activeCategory=cats[0]||'';$('tabs').innerHTML=cats.map(c=>'<button data-cat="'+esc(c)+'" class="'+(c===activeCategory?'active':'')+'">'+esc(c)+'</button>').join('');$('heading').textContent=activeCategory+' workspace';$('category').innerHTML=cats.map(c=>'<option>'+esc(c)+'</option>').join('');if(session.role==='SUPER_ADMIN')$('categoryManager').innerHTML=cats.map(c=>'<div class="product"><strong>'+esc(c)+'</strong><div><button data-rename-cat="'+esc(c)+'">Rename</button><button class="danger" data-delete-cat="'+esc(c)+'">Delete</button></div></div>').join('');$('products').innerHTML=data.products.filter(p=>p.category===activeCategory).map(p=>'<article class="product"><strong>'+esc(p.name)+'</strong><p>LKR '+Number(p.basePrice).toLocaleString()+'</p><p>Sizes: '+esc(p.sizes.join(', '))+'</p><button data-edit="'+esc(p.id)+'">Edit</button><button class="danger" data-delete="'+esc(p.id)+'">Delete</button></article>').join('')||'<p>No products in this category yet.</p>';}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-$('loginForm').onsubmit=async e=>{e.preventDefault();try{session=await call('login',$('email').value,$('password').value);$('login').classList.add('hidden');$('app').classList.remove('hidden');await refresh();}catch(x){status(x.message||String(x));}};
-$('tabs').onclick=e=>{const b=e.target.closest('[data-cat]');if(b){activeCategory=b.dataset.cat;$('editor').classList.add('hidden');draw();}};
-$('new').onclick=()=>{ $('editor').classList.remove('hidden');$('formTitle').textContent='Add '+activeCategory;$('pid').value='';$('name').value='';$('category').value=activeCategory;$('price').value='';$('colors').value='';$('sizes').value='S, M, L, XL, 2XL';$('images').value='';$('description').value='';$('active').checked=true;};
-$('products').onclick=async e=>{const b=e.target.closest('button');if(!b)return;const p=data.products.find(x=>x.id===b.dataset.edit);if(p){$('editor').classList.remove('hidden');$('pid').value=p.id;$('name').value=p.name;$('category').value=p.category;$('price').value=p.basePrice;$('colors').value=p.colors.join(', ');$('sizes').value=p.sizes.join(', ');$('images').value=p.images.join('\n');$('description').value=p.description;$('active').checked=p.active;}else if(b.dataset.delete){if(confirm('Delete this product?')){try{data=await call('deleteProduct',session.token,b.dataset.delete);draw();}catch(x){alert(x.message||x);}}}};
-$('editor').onsubmit=async e=>{e.preventDefault();try{data=await call('saveProduct',session.token,{id:$('pid').value,name:$('name').value,category:$('category').value,basePrice:$('price').value,colors:$('colors').value.split(',').map(x=>x.trim()).filter(Boolean),sizes:$('sizes').value.split(',').map(x=>x.trim()).filter(Boolean),images:$('images').value.split('\n').map(x=>x.trim()).filter(Boolean),description:$('description').value,active:$('active').checked});$('editor').classList.add('hidden');draw();alert('Saved.');}catch(x){alert(x.message||x);}};
-$('cancel').onclick=()=>$('editor').classList.add('hidden');
-$('categoryForm').onsubmit=async e=>{e.preventDefault();try{const name=$('newCategory').value.trim();data=await call('addCategory',session.token,name);activeCategory=name;$('newCategory').value='';draw();}catch(x){alert(x.message||x);}};\n$('categoryManager').onclick=async e=>{const b=e.target.closest('button');if(!b)return;const oldName=b.dataset.renameCat||b.dataset.deleteCat;if(!oldName)return;if(b.dataset.renameCat){const next=prompt('Enter the new category name:',oldName);if(next===null||!next.trim()||next.trim()===oldName)return;try{data=await call('renameCategory',session.token,oldName,next.trim());if(activeCategory===oldName)activeCategory=next.trim();draw();alert('Category renamed.');}catch(x){alert(x.message||x);}}else if(b.dataset.deleteCat){if(!confirm('Delete category “'+oldName+'”? This can only be done when no products use it.'))return;try{data=await call('deleteCategory',session.token,oldName);if(activeCategory===oldName)activeCategory=data.categories[0]||'';draw();alert('Category deleted.');}catch(x){alert(x.message||x);}}};
-$('logout').onclick=async()=>{try{await call('logout',session.token);}finally{location.reload();}};
-</script></body></html>
+function draw(){
+ $('identity').textContent=session.email+' · '+session.role;
+ $('superTools').classList.toggle('hidden',session.role!=='SUPER_ADMIN');
+ const cats=data.categories||[];
+ if(!cats.includes(activeCategory))activeCategory=cats[0]||'';
+ $('tabs').innerHTML=cats.map(c=>'<button type="button" data-cat="'+esc(c)+'" class="'+(c===activeCategory?'active':'')+'">'+esc(c)+'</button>').join('');
+ $('heading').textContent=activeCategory+' workspace';
+ $('category').innerHTML=cats.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');
+ if(session.role==='SUPER_ADMIN')$('categoryManager').innerHTML=cats.map(c=>'<div class="product"><strong>'+esc(c)+'</strong><div><button type="button" data-rename-cat="'+esc(c)+'">Rename</button><button type="button" class="danger" data-delete-cat="'+esc(c)+'">Delete</button></div></div>').join('');
+ const list=data.products||[];
+ $('products').innerHTML=list.filter(p=>p.category===activeCategory).map(p=>{
+  const total=Object.values(p.stockBySize||{}).reduce((a,b)=>a+(Number(b)||0),0);
+  const sizeText=(p.sizes||[]).map(s=>s+': '+(Number((p.stockBySize||{})[s])||0)).join(' · ');
+  return '<article class="product"><strong>'+esc(p.name)+'</strong><p>LKR '+Number(p.basePrice||0).toLocaleString()+'</p><p class="product-meta">'+esc(sizeText||'No size stock configured')+'</p><span class="pill">'+total+' total pcs</span>'+(p.sizeChartImage||((p.sizeChart||[]).length)?'<span class="pill">Size chart added</span>':'')+'<div><button type="button" data-edit="'+esc(p.id)+'">Edit</button><button type="button" class="danger" data-delete="'+esc(p.id)+'">Delete</button></div></article>';
+ }).join('')||'<p class="muted">No products in this category yet.</p>';
+}
+function clearEditor(){
+ $('editor').classList.add('hidden');
+}
+function newProduct(){
+ $('editor').classList.remove('hidden');$('formTitle').textContent='Add '+activeCategory;
+ $('pid').value='';$('name').value='';$('category').value=activeCategory;$('price').value='';
+ $('colors').value='';$('sizes').value='S, M, L, XL, 2XL';$('images').value='';
+ $('description').value='';$('active').checked=true;$('sizeChartImage').value='';
+ $('sizeChartRows').value='';$('chartPreview').classList.add('hidden');
+ renderStockInputs(splitList($('sizes').value),{});
+ $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function editProduct(product){
+ $('editor').classList.remove('hidden');$('formTitle').textContent='Edit '+product.name;
+ $('pid').value=product.id;$('name').value=product.name;$('category').value=product.category;
+ $('price').value=product.basePrice;$('colors').value=(product.colors||[]).join(', ');
+ $('sizes').value=(product.sizes||[]).join(', ');$('images').value=(product.images||[]).join('\n');
+ $('description').value=product.description||'';$('active').checked=product.active!==false;
+ $('sizeChartImage').value=product.sizeChartImage||'';
+ $('sizeChartRows').value=chartText(product.sizeChart||[]);
+ renderStockInputs(product.sizes||[],product.stockBySize||{});
+ previewChart();
+ $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function previewChart(){
+ const url=$('sizeChartImage').value.trim(),img=$('chartPreview');
+ if(/^https:\/\//i.test(url)){img.src=url;img.classList.remove('hidden');}else{img.removeAttribute('src');img.classList.add('hidden');}
+}
+$('loginForm').onsubmit=async e=>{
+ e.preventDefault();status('Signing in...');
+ try{session=await call('login',$('email').value,$('password').value);await refresh();$('login').classList.add('hidden');$('app').classList.remove('hidden');status('');}
+ catch(error){session=null;status(error.message||String(error));}
+};
+$('tabs').onclick=e=>{const b=e.target.closest('[data-cat]');if(b){activeCategory=b.dataset.cat;clearEditor();draw();}};
+$('new').onclick=newProduct;
+$('sizes').addEventListener('input',sizesChanged);
+$('sizeChartImage').addEventListener('input',previewChart);
+$('products').onclick=async e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.edit){const p=(data.products||[]).find(x=>x.id===b.dataset.edit);if(p)editProduct(p);}
+ else if(b.dataset.delete&&confirm('Delete this product?')){try{data=await call('deleteProduct',session.token,b.dataset.delete);draw();}catch(error){alert(error.message||String(error));}}
+};
+$('editor').onsubmit=async e=>{
+ e.preventDefault();
+ try{
+  const sizes=splitList($('sizes').value),stockBySize={};
+  document.querySelectorAll('[data-stock-size]').forEach(input=>{stockBySize[input.dataset.stockSize]=Number(input.value);});
+  if(sizes.some(s=>!Number.isInteger(stockBySize[s])||stockBySize[s]<0))throw Error('Enter a valid whole-number stock quantity for every size.');
+  data=await call('saveProduct',session.token,{
+   id:$('pid').value,name:$('name').value,category:$('category').value,basePrice:$('price').value,
+   colors:splitList($('colors').value),sizes:sizes,stockBySize:stockBySize,
+   images:$('images').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),
+   description:$('description').value,active:$('active').checked,
+   sizeChartImage:$('sizeChartImage').value.trim(),sizeChart:parseChart($('sizeChartRows').value)
+  });
+  clearEditor();draw();alert('Product saved successfully.');
+ }catch(error){alert(error.message||String(error));}
+};
+$('cancel').onclick=clearEditor;
+$('categoryForm').onsubmit=async e=>{e.preventDefault();try{const name=$('newCategory').value.trim();data=await call('addCategory',session.token,name);activeCategory=name;$('newCategory').value='';draw();}catch(error){alert(error.message||String(error));}};
+$('categoryManager').onclick=async e=>{
+ const b=e.target.closest('button');if(!b)return;
+ const oldName=b.dataset.renameCat||b.dataset.deleteCat;if(!oldName)return;
+ if(b.dataset.renameCat){
+  const next=prompt('Enter the new category name:',oldName);if(next===null||!next.trim()||next.trim()===oldName)return;
+  try{data=await call('renameCategory',session.token,oldName,next.trim());if(activeCategory===oldName)activeCategory=next.trim();draw();alert('Category renamed.');}catch(error){alert(error.message||String(error));}
+ }else if(b.dataset.deleteCat&&confirm('Delete category "'+oldName+'"? This is only possible when no products use it.')){
+  try{data=await call('deleteCategory',session.token,oldName);if(activeCategory===oldName)activeCategory=data.categories[0]||'';draw();alert('Category deleted.');}catch(error){alert(error.message||String(error));}
+ }
+};
+$('logout').onclick=async()=>{try{if(session)await call('logout',session.token);}finally{location.reload();}};
+</script>
+</body>
+</html>
