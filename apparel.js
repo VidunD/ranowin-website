@@ -1,6 +1,6 @@
 /* Ranowin Apparel storefront — separate Apparel Apps Script backend.
    Set this to the separate Apparel Web App /exec URL after deployment. */
-const APPAREL_API_URL = 'PASTE_APPAREL_WEB_APP_EXEC_URL_HERE';
+const APPAREL_API_URL = 'https://script.google.com/macros/s/AKfycbyiQRd5yoYKAQpYNE7vxNYUK0XmHj8S7W2toGWiecJMBnYkpJCcXZ_YuP4VOCXwdRUL/exec';
 const APPAREL_WHATSAPP = '94719692801'; // Ranowin Production WhatsApp number.
 const $ = id => document.getElementById(id);
 let products=[],selected=null,cart=[];
