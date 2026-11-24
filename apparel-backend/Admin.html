@@ -41,7 +41,7 @@
 
 <label>Product name<input id="name" required maxlength="120"></label>
 <label>Category<select id="category"></select></label>
-<label>Base price (LKR)<input id="price" type="number" min="0" step=".01" required></label>
+<div class="row"><label>Original price (LKR)<input id="price" type="number" min="0" step=".01" required></label><label>Discount price (LKR)<input id="discountPrice" type="number" min="0" step=".01" placeholder="Leave blank for no discount"></label></div>
 <label>Colours (comma separated)<input id="colors" placeholder="Black, White, Navy"></label>
 <label>Available sizes (comma separated)
 <input id="sizes" value="S, M, L, XL, 2XL">
@@ -149,7 +149,7 @@ function draw(){
  $('products').innerHTML=list.filter(p=>p.category===activeCategory).map(p=>{
   const total=Object.values(p.stockBySize||{}).reduce((a,b)=>a+(Number(b)||0),0);
   const sizeText=(p.sizes||[]).map(s=>s+': '+(Number((p.stockBySize||{})[s])||0)).join(' · ');
-  return '<article class="product"><strong>'+esc(p.name)+'</strong><p>LKR '+Number(p.basePrice||0).toLocaleString()+'</p><p class="product-meta">'+esc(sizeText||'No size stock configured')+'</p><span class="pill">'+total+' total pcs</span>'+(p.sizeChartImage||((p.sizeChart||[]).length)?'<span class="pill">Size chart added</span>':'')+'<div><button type="button" data-edit="'+esc(p.id)+'">Edit</button><button type="button" class="danger" data-delete="'+esc(p.id)+'">Delete</button></div></article>';
+  return '<article class="product"><strong>'+esc(p.name)+'</strong><p>'+(p.discountPrice!==null&&p.discountPrice!==undefined&&p.discountPrice!==''&&Number(p.discountPrice)<Number(p.basePrice)?'<del class="muted">LKR '+Number(p.basePrice).toLocaleString()+'</del><br><strong style="color:#b4233b">LKR '+Number(p.discountPrice).toLocaleString()+'</strong>':'LKR '+Number(p.basePrice||0).toLocaleString())+'</p><p class="product-meta">'+esc(sizeText||'No size stock configured')+'</p><span class="pill">'+total+' total pcs</span>'+(p.sizeChartImage||((p.sizeChart||[]).length)?'<span class="pill">Size chart added</span>':'')+'<div><button type="button" data-edit="'+esc(p.id)+'">Edit</button><button type="button" class="danger" data-delete="'+esc(p.id)+'">Delete</button></div></article>';
  }).join('')||'<p class="muted">No products in this category yet.</p>';
 }
 function clearEditor(){
@@ -157,7 +157,7 @@ function clearEditor(){
 }
 function newProduct(){
  $('editor').classList.remove('hidden');$('formTitle').textContent='Add '+activeCategory;
- $('pid').value='';$('name').value='';$('category').value=activeCategory;$('price').value='';
+ $('pid').value='';$('name').value='';$('category').value=activeCategory;$('price').value='';$('discountPrice').value='';
  $('colors').value='';$('sizes').value='S, M, L, XL, 2XL';$('images').value='';
  $('description').value='';$('active').checked=true;$('sizeChartImage').value='';
  $('sizeChartRows').value='';$('chartPreview').classList.add('hidden');
@@ -167,7 +167,7 @@ function newProduct(){
 function editProduct(product){
  $('editor').classList.remove('hidden');$('formTitle').textContent='Edit '+product.name;
  $('pid').value=product.id;$('name').value=product.name;$('category').value=product.category;
- $('price').value=product.basePrice;$('colors').value=(product.colors||[]).join(', ');
+ $('price').value=product.basePrice;$('discountPrice').value=product.discountPrice??'';$('colors').value=(product.colors||[]).join(', ');
  $('sizes').value=(product.sizes||[]).join(', ');$('images').value=(product.images||[]).join('\n');
  $('description').value=product.description||'';$('active').checked=product.active!==false;
  $('sizeChartImage').value=product.sizeChartImage||'';
@@ -201,7 +201,7 @@ $('editor').onsubmit=async e=>{
   document.querySelectorAll('[data-stock-size]').forEach(input=>{stockBySize[input.dataset.stockSize]=Number(input.value);});
   if(sizes.some(s=>!Number.isInteger(stockBySize[s])||stockBySize[s]<0))throw Error('Enter a valid whole-number stock quantity for every size.');
   data=await call('saveProduct',session.token,{
-   id:$('pid').value,name:$('name').value,category:$('category').value,basePrice:$('price').value,
+   id:$('pid').value,name:$('name').value,category:$('category').value,basePrice:$('price').value,discountPrice:$('discountPrice').value,
    colors:splitList($('colors').value),sizes:sizes,stockBySize:stockBySize,
    images:$('images').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),
    description:$('description').value,active:$('active').checked,
