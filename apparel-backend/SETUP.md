@@ -8,6 +8,8 @@ Create a new Google Sheet named **Ranowin Apparel Database**. Copy only the spre
 ## 2. Create Apps Script
 Create a standalone project at https://script.google.com/ and add:
 - Code.gs → contents of this folder's Code.gs
+- Orders.gs → contents of Orders.gs (required for T-Shirt order saving, order management and image uploads)
+- Reports.gs → contents of Reports.gs (monthly reports, payments and backups)
 - HTML file named **Admin** → contents of Admin.html
 
 ## 3. Script Properties
@@ -29,27 +31,25 @@ Do not reuse the Baby Bag admin password. Credentials are converted to salted ha
 4. Sign in as Super Admin and verify category workspaces.
 
 ## 5. Existing database migration
-If this backend and Products sheet already exist, do **not** rerun setupApparel_ just to add the new fields. Paste the updated Code.gs and Admin.html into Apps Script, select **migrateApparelStockAndSizeCharts_**, and Run it once. It appends these columns without deleting existing product rows:
-- StockJSON — stock quantity for each size
-- SizeChartImage — HTTPS URL for the size-chart image
-- SizeChartJSON — measurement rows (size, chest, length, waist, hip)
+If this backend and Products sheet already exist, do **not** rerun setupApparel_ just to add the new fields. Paste the updated Code.gs, Orders.gs and Admin.html into Apps Script, select **migrateApparelStockAndSizeCharts_**, and Run it once. It appends the new colour-size stock column without deleting existing product rows. Existing shared size stock is assigned to the first colour as a safe starting point; review and adjust each colour/size quantity in Admin.
 
 Then deploy the web app using **Deploy → Manage deployments → Edit → New version → Deploy**.
 
 ## 6. Product data
 The Admin product editor supports:
-- A separate whole-number stock quantity for every size. A quantity of 0 means out of stock.
-- A size-chart image URL.
+- A separate whole-number stock quantity for every colour + size combination. A quantity of 0 means out of stock.
+- Product photo uploads by drag-and-drop or the Upload photos button. Uploaded images are stored in a dedicated Google Drive folder and their URLs are saved with the product.
+- Size-chart photo uploads by drag-and-drop or the Choose image button.
 - A measurement table. Enter one row per line in this order: Size,Chest,Length,Waist,Hip. Use one consistent unit (cm or inches) per product.
 - Existing images, colours, descriptions, categories and prices.
 
-The public read-only catalogue endpoint is /exec?action=catalog. It returns active products with sizes, stockBySize, sizeChartImage and sizeChart fields. A customer-facing apparel page must read these fields to display available sizes and the Size Guide. This endpoint is separate from the existing Baby Bag storefront and does not automatically connect or change its order flow.
+The public read-only catalogue endpoint is /exec?action=catalog. It returns active products with colour-size stock, photos and size chart. The repository's separate apparel.html/apparel.js page uses this endpoint and sends customer orders to this same Apparel backend. In apparel.js, set APPAREL_API_URL to the deployed Apparel Web App /exec URL.
 
-## Security and current scope
+## Security and order handling
 - User roles and category access are checked by server functions.
-- The apparel admin account is separate from the Baby Bag admin login.
-- The public catalogue endpoint is read-only. Do not store customer design files in a public repository.
-- This backend currently manages catalogue data and per-size stock values. It does not yet decrement stock automatically when a customer places an order; that requires connecting the apparel order submission flow to a server-side stock-reservation function.
+- The apparel admin account and spreadsheet are separate from the Baby Bag admin login and database.
+- Public catalogue reads are read-only. Order submission validates product, colour, size and available stock on the server, then reserves stock and appends the order to the Apparel Orders sheet.
+- Admin can view T-Shirt orders and update their status. Payment records and monthly reports remain in the Apparel spreadsheet.
 
 ## 7. Summary reports and Google Drive backups
 Add the new **Reports.gs** file from this folder to the same Apps Script project. It is a separate module and does not replace Code.gs.
@@ -72,3 +72,14 @@ To enable scheduled backups, sign in as Admin and click **Enable Automatic Daily
 The reporting module appends `DeliveryFee`, `GoodsTotal`, and `PaymentStatus` headers to the existing Orders sheet and creates a separate Payments sheet if it does not exist. Existing order rows and product data are preserved. The Admin page also includes a payment-entry form: enter the Apparel Order ID, payment date, total received, and its goods/delivery allocation. The server checks the order and remaining balance, prevents overpayment, and updates Paid / Partially Paid status. Received-income totals count payments by their payment dates; outstanding balances subtract all recorded payments linked to each order. Record goods and delivery allocations in `GoodsAmount` and `DeliveryAmount` for the split totals to be accurate.
 
 After adding Reports.gs and updating Admin.html, deploy the web app with **Deploy → Manage deployments → Edit → New version → Deploy**.
+
+
+## 8. Deploy and connect the apparel storefront
+1. Add the updated Code.gs, Orders.gs, Reports.gs and Admin.html to the **separate Apparel Apps Script project**.
+2. Run **migrateApparelStockAndSizeCharts_** once for an existing database. Run **setupApparel_** only for a new database.
+3. Deploy the web app as **Execute as Me** and **Who has access: Anyone**. Approve Google Drive access the first time you upload an image.
+4. Copy the deployed web app URL ending in **/exec**.
+5. In the GitHub repository, open **apparel.js** and replace `PASTE_APPAREL_WEB_APP_EXEC_URL_HERE` with that URL. Do not put the URL in the Baby Bag script.
+6. GitHub Pages will publish the separate **apparel.html** page. The main website has an Apparel navigation link.
+
+The new order endpoint is POST to the same /exec URL with action=createOrder. Orders are stored only in the Apparel spreadsheet. Re-deploy the Apps Script web app using **Manage deployments → Edit → New version → Deploy** after changing Apps Script files.
