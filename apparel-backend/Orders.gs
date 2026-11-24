@@ -53,19 +53,6 @@ function createApparelOrder_(input){
       const parts=k.split('::'),p=byId[parts[0]],ix=all.findIndex(x=>String(x.id)===String(p.id)),row=ix+2,m=headerMap_(ps),col=p.colors.length?m.VariantStockJSON:m.StockJSON;
       ps.getRange(row,col+1).setValue(JSON.stringify(p.colors.length?p.stockByVariant:p.stockBySize));
     });
-      const p=byId[String(it.productId||'')];if(!p||!p.active)throw Error('A selected product is no longer available.');
-      const color=String(it.color||'').trim(),size=String(it.size||'').trim(),qty=Number(it.qty);
-      if(!p.sizes.includes(size)||!Number.isInteger(qty)||qty<1||qty>20)throw Error('Invalid size or quantity for '+p.name+'.');
-      if(p.colors.length&&!p.colors.includes(color))throw Error('Invalid colour for '+p.name+'.');
-      const key=color+'||'+size;
-      const stockMap=p.colors.length?p.stockByVariant:p.stockBySize;
-      const stockKey=p.colors.length?key:size;
-      const available=Number(stockMap&&stockMap[stockKey]||0);
-      if(available<qty)throw Error(p.name+' ('+(color?color+' / ':'')+size+') has only '+available+' item(s) in stock.');
-      const unit=Number(p.salePrice||p.basePrice)||0,line=unit*qty;goods+=line;
-      normalized.push({productId:p.id,name:p.name,color:color,size:size,qty:qty,unitPrice:unit,lineTotal:line,stockKey:stockKey});
-    });
-
     const id='APP-'+Utilities.formatDate(new Date(),Session.getScriptTimeZone(),'yyMMdd')+'-'+Utilities.getUuid().slice(0,6).toUpperCase();
     const total=goods+delivery,sh=apparelOrdersSheet_();
     const savedItems=normalized.map(({stockKey,...x})=>x);
