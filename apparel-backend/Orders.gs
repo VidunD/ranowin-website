@@ -86,6 +86,23 @@ function updateApparelOrder(token,id,status){
   const s=apparelOrdersSheet_(),m=headerMap_(s),n=s.getLastRow();if(n<2)throw Error('Order not found.');
   const rows=s.getRange(2,1,n-1,s.getLastColumn()).getValues(),ix=rows.findIndex(r=>String(r[m.ID])===id);
   if(ix<0)throw Error('Order not found.');
+  const row=rows[ix],previous=String(row[m.Status]||'Pending');
+  if(previous==='Cancelled'&&status!=='Cancelled')throw Error('Cancelled orders cannot be reopened. Create a new order instead.');
+  if(status==='Cancelled'&&previous!=='Cancelled'){
+    const items=json_(row[m.ItemsJSON],[]),ps=DB_().getSheetByName('Products'),all=products_(),byId={};all.forEach(p=>byId[String(p.id)]=p);
+    const restore={};
+    items.forEach(it=>{
+      const p=byId[String(it.productId||'')];if(!p)return;
+      const key=p.colors.length?String(it.color||'')+'||'+String(it.size||''):String(it.size||'');
+      const group=String(p.id)+'::'+key;restore[group]=(restore[group]||0)+Number(it.qty||0);
+    });
+    Object.keys(restore).forEach(group=>{
+      const parts=group.split('::'),p=byId[parts[0]];if(!p)return;
+      const map=p.colors.length?p.stockByVariant:p.stockBySize;map[parts[1]]=Number(map[parts[1]]||0)+restore[group];
+      const ixProduct=all.findIndex(x=>String(x.id)===String(p.id)),pm=headerMap_(ps),col=p.colors.length?pm.VariantStockJSON:pm.StockJSON;
+      ps.getRange(ixProduct+2,col+1).setValue(JSON.stringify(map));
+    });
+  }
   s.getRange(ix+2,m.Status+1).setValue(status);
   return {success:true,status:status};
 }
