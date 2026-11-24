@@ -16,16 +16,23 @@ function doPost(e){
     return apparelOrderJson_({success:false,error:'Unknown apparel action.'});
   }catch(err){return apparelOrderJson_({success:false,error:String(err&&err.message||err)});}
 }
+function setupCustomerDesignFolder_(){
+  const props=P_(),key='APPAREL_CUSTOMER_DESIGN_FOLDER_ID';
+  const existing=String(props.getProperty(key)||'').trim();
+  if(existing){try{return 'Customer design folder is ready: '+DriveApp.getFolderById(existing).getName();}catch(e){}}
+  const folder=DriveApp.createFolder('Ranowin Apparel Customer Designs');
+  props.setProperty(key,folder.getId());
+  return 'Customer design folder created: '+folder.getName();
+}
 function uploadCustomerDesign_(input){
   const name=String(input.fileName||'design-image').replace(/[^a-zA-Z0-9._-]/g,'_').slice(0,90);
   const match=String(input.dataUrl||'').match(/^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
   if(!match)throw Error('Choose a JPG, PNG, WEBP or GIF design image.');
   const bytes=Utilities.base64Decode(match[2]);
   if(bytes.length>3*1024*1024)throw Error('Each customer design image must be 3 MB or smaller.');
-  const props=P_(),folderKey='APPAREL_CUSTOMER_DESIGN_FOLDER_ID';
-  let folder;const folderId=String(props.getProperty(folderKey)||'').trim();
-  if(folderId){try{folder=DriveApp.getFolderById(folderId);}catch(e){}}
-  if(!folder){folder=DriveApp.createFolder('Ranowin Apparel Customer Designs');props.setProperty(folderKey,folder.getId());}
+  const folderId=String(P_().getProperty('APPAREL_CUSTOMER_DESIGN_FOLDER_ID')||'').trim();
+  if(!folderId)throw Error('Customer design folder is not initialized. Run setupCustomerDesignFolder_ once from the Apps Script editor.');
+  const folder=DriveApp.getFolderById(folderId);
   const file=folder.createFile(Utilities.newBlob(bytes,match[1],name));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
   return {success:true,url:'https://drive.google.com/file/d/'+file.getId()+'/view',fileId:file.getId(),name:file.getName()};
