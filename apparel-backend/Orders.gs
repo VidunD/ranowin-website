@@ -11,9 +11,24 @@ function doPost(e){
   try{
     const raw=e&&e.postData&&e.postData.contents?e.postData.contents:'{}';
     const input=JSON.parse(raw);
-    if(input.action!=='createOrder')return apparelOrderJson_({success:false,error:'Unknown apparel action.'});
-    return apparelOrderJson_(createApparelOrder_(input));
+    if(input.action==='uploadCustomerDesign')return apparelOrderJson_(uploadCustomerDesign_(input));
+    if(input.action==='createOrder')return apparelOrderJson_(createApparelOrder_(input));
+    return apparelOrderJson_({success:false,error:'Unknown apparel action.'});
   }catch(err){return apparelOrderJson_({success:false,error:String(err&&err.message||err)});}
+}
+function uploadCustomerDesign_(input){
+  const name=String(input.fileName||'design-image').replace(/[^a-zA-Z0-9._-]/g,'_').slice(0,90);
+  const match=String(input.dataUrl||'').match(/^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/);
+  if(!match)throw Error('Choose a JPG, PNG, WEBP or GIF design image.');
+  const bytes=Utilities.base64Decode(match[2]);
+  if(bytes.length>3*1024*1024)throw Error('Each customer design image must be 3 MB or smaller.');
+  const props=P_(),folderKey='APPAREL_CUSTOMER_DESIGN_FOLDER_ID';
+  let folder;const folderId=String(props.getProperty(folderKey)||'').trim();
+  if(folderId){try{folder=DriveApp.getFolderById(folderId);}catch(e){}}
+  if(!folder){folder=DriveApp.createFolder('Ranowin Apparel Customer Designs');props.setProperty(folderKey,folder.getId());}
+  const file=folder.createFile(Utilities.newBlob(bytes,match[1],name));
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
+  return {success:true,url:'https://drive.google.com/file/d/'+file.getId()+'/view',fileId:file.getId(),name:file.getName()};
 }
 function createApparelOrder_(input){
   input=input||{};
@@ -23,6 +38,7 @@ function createApparelOrder_(input){
   if(!phone||phone.length>40)throw Error('Enter a valid phone number.');
   if(!address||address.length>1000)throw Error('Enter a delivery address.');
   if(!items.length||items.length>30)throw Error('Your cart is empty or contains too many items.');
+  const designFiles=Array.isArray(input.designFiles)?input.designFiles.slice(0,3).map(f=>({name:String(f.name||'Design').slice(0,120),url:String(f.url||'')})).filter(f=>/^https:\/\/drive\.google\.com\//i.test(f.url)):[];
   const delivery=Number(input.deliveryFee||0);
   if(!Number.isFinite(delivery)||delivery<0||delivery>100000)throw Error('Invalid delivery fee.');
   const lock=LockService.getScriptLock();lock.waitLock(15000);
@@ -38,7 +54,7 @@ function createApparelOrder_(input){
       const key=color+'||'+size,stockMap=p.colors.length?p.stockByVariant:p.stockBySize,stockKey=p.colors.length?key:size;
       const demandKey=String(p.id)+'::'+stockKey;demand[demandKey]=(demand[demandKey]||0)+qty;
       const unit=Number(p.salePrice||p.basePrice)||0,line=unit*qty;goods+=line;
-      normalized.push({productId:p.id,name:p.name,color:color,size:size,qty:qty,unitPrice:unit,lineTotal:line,stockKey:stockKey});
+      normalized.push({productId:p.id,name:p.name,color:color,size:size,qty:qty,unitPrice:unit,lineTotal:line,printMethod:String(it.printMethod||'No print').slice(0,80),printPlacement:String(it.printPlacement||'Not applicable').slice(0,100),neckLabel:String(it.neckLabel||'Keep existing label').slice(0,100),customInstructions:String(it.customInstructions||'').slice(0,1000),stockKey:stockKey});
     });
     Object.keys(demand).forEach(k=>{
       const parts=k.split('::'),p=byId[parts[0]],stockMap=p.colors.length?p.stockByVariant:p.stockBySize,available=Number(stockMap[parts[1]]||0);
@@ -56,14 +72,14 @@ function createApparelOrder_(input){
     const id='APP-'+Utilities.formatDate(new Date(),Session.getScriptTimeZone(),'yyMMdd')+'-'+Utilities.getUuid().slice(0,6).toUpperCase();
     const total=goods+delivery,sh=apparelOrdersSheet_();
     const savedItems=normalized.map(({stockKey,...x})=>x);
-    sh.appendRow([id,new Date(),customer,phone,address,JSON.stringify(savedItems),total,'Pending','',String(input.notes||'').slice(0,500),delivery,goods,'Unpaid']);
+    sh.appendRow([id,new Date(),customer,phone,address,JSON.stringify(savedItems),total,'Pending',JSON.stringify(designFiles),String(input.notes||'').slice(0,500),delivery,goods,'Unpaid']);
     return {success:true,orderId:id,total:total,goodsTotal:goods,deliveryFee:delivery,message:'T-Shirt order received.'};
   }finally{lock.releaseLock();}
 }
 function getApparelOrders(token){
   auth_(token);const s=apparelOrdersSheet_(),rows=apparelRowsAsObjects_(s);
   return rows.reverse().map(o=>({id:String(o.ID||''),createdAt:o.CreatedAt,customer:o.Customer,phone:o.Phone,address:o.Address,
-    items:json_(o.ItemsJSON,[]),total:Number(o.Total)||0,goodsTotal:Number(o.GoodsTotal)||Number(o.Total)||0,
+    items:json_(o.ItemsJSON,[]),designFiles:json_(o.DesignFilesJSON,[]),total:Number(o.Total)||0,goodsTotal:Number(o.GoodsTotal)||Number(o.Total)||0,
     deliveryFee:Number(o.DeliveryFee)||0,status:String(o.Status||'Pending'),paymentStatus:String(o.PaymentStatus||'Unpaid'),notes:o.Notes||''}));
 }
 function updateApparelOrder(token,id,status){
