@@ -28,7 +28,18 @@ function setupApparel_(){
   p.deleteProperty('SUPER_ADMIN_PASSWORD');p.deleteProperty('APPAREL_ADMIN_PASSWORD');
   return 'Setup complete. Existing product rows were preserved; stock and size-chart columns are ready.';
 }
-function migrateApparelStockAndSizeCharts_(){const s=DB_().getSheetByName('Products');if(!s)throw Error('Products sheet not found. Run setupApparel_ first.');ensureHeaders_(s,['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON','DiscountPrice','VariantStockJSON']);return 'Migration complete. Existing products preserved; colour-size stock and size chart columns are ready.';}
+function migrateApparelStockAndSizeCharts_(){
+  const s=DB_().getSheetByName('Products');if(!s)throw Error('Products sheet not found. Run setupApparel_ first.');
+  ensureHeaders_(s,['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON','DiscountPrice','VariantStockJSON']);
+  const m=headerMap_(s),all=products_();
+  all.forEach((p,i)=>{
+    if(p.colors&&p.colors.length&&!Object.keys(p.stockByVariant||{}).length){
+      const converted={};p.sizes.forEach(size=>{converted[p.colors[0]+'||'+size]=Number(p.stockBySize[size]||0);});
+      s.getRange(i+2,m.VariantStockJSON+1).setValue(JSON.stringify(converted));
+    }
+  });
+  return 'Migration complete. Existing product rows and stock were preserved. Existing shared size stock was assigned to the first listed colour; review colour/size quantities in Admin.';
+}
 function json_(v,f){try{return JSON.parse(v||'')}catch(e){return f;}}
 function headerMap_(sheet){const h=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];const m={};h.forEach((v,i)=>m[String(v)]=i);return m;}
 function products_(){
