@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-*{box-sizing:border-box}body{font:15px Arial,sans-serif;background:#f4f2f8;color:#242033;margin:0;padding:22px}main{max-width:1120px;margin:auto}h1{color:#43246f}section,.panel{background:#fff;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #24123a12}label{display:block;margin:10px 0;font-weight:600}input,textarea,select{display:block;width:100%;padding:11px;border:1px solid #c9c3d4;border-radius:8px;margin-top:5px;font:inherit}input[type=checkbox]{display:inline;width:auto}button{padding:10px 15px;border:0;border-radius:8px;background:#55318a;color:white;cursor:pointer;margin:5px 5px 5px 0}button.danger{background:#a52f46}.muted{color:#696274}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{background:#e8e1f1;color:#39215b}.tabs button.active{background:#55318a;color:#fff}.product{border:1px solid #ddd6e7;padding:12px;border-radius:10px}.hidden{display:none!important}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stock-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.stock-cell{border:1px solid #ddd6e7;border-radius:9px;padding:10px}.stock-cell label{margin:0}.stock-cell input{margin-top:7px}.hint{font-size:12px;color:#696274;font-weight:400}.section-title{margin:22px 0 5px;color:#43246f}.product-meta{font-size:13px;color:#696274}.preview{max-width:220px;max-height:180px;object-fit:contain;border:1px solid #ddd6e7;border-radius:8px;margin-top:8px}.status{color:#a52f46;white-space:pre-wrap}.pill{display:inline-block;background:#eee7f8;border-radius:20px;padding:4px 9px;font-size:12px}.hidden{display:none!important}@media(max-width:650px){body{padding:10px}.row{grid-template-columns:1fr}}
+*{box-sizing:border-box}body{font:15px Arial,sans-serif;background:#f4f2f8;color:#242033;margin:0;padding:22px}main{max-width:1120px;margin:auto}h1{color:#43246f}section,.panel{background:#fff;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #24123a12}label{display:block;margin:10px 0;font-weight:600}input,textarea,select{display:block;width:100%;padding:11px;border:1px solid #c9c3d4;border-radius:8px;margin-top:5px;font:inherit}input[type=checkbox]{display:inline;width:auto}button{padding:10px 15px;border:0;border-radius:8px;background:#55318a;color:white;cursor:pointer;margin:5px 5px 5px 0}button.danger{background:#a52f46}.muted{color:#696274}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{background:#e8e1f1;color:#39215b}.tabs button.active{background:#55318a;color:#fff}.product{border:1px solid #ddd6e7;padding:12px;border-radius:10px}.hidden{display:none!important}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stock-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.stock-cell{border:1px solid #ddd6e7;border-radius:9px;padding:10px}.stock-cell label{margin:0}.stock-cell input{margin-top:7px}.hint{font-size:12px;color:#696274;font-weight:400}.section-title{margin:22px 0 5px;color:#43246f}.product-meta{font-size:13px;color:#696274}.preview{max-width:220px;max-height:180px;object-fit:contain;border:1px solid #ddd6e7;border-radius:8px;margin-top:8px}.status{color:#a52f46;white-space:pre-wrap}.pill{display:inline-block;background:#eee7f8;border-radius:20px;padding:4px 9px;font-size:12px}.hidden{display:none!important}.dropzone{border:2px dashed #aa9bc0;border-radius:12px;padding:22px;text-align:center;background:#faf8fd;cursor:pointer}.dropzone.drag{background:#eee5fa;border-color:#55318a}.media-list{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}.media-item{position:relative}.media-item img{width:90px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #ddd}.media-item button{position:absolute;right:2px;top:2px;padding:3px 7px;margin:0}.orders-list{display:grid;gap:10px}.order-card{border:1px solid #ddd6e7;border-radius:10px;padding:13px}.variant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}.variant-cell{border:1px solid #ddd6e7;border-radius:8px;padding:9px}.variant-cell small{display:block;color:#696274;margin-bottom:5px}@media(max-width:650px){body{padding:10px}.row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -48,15 +48,12 @@
 <span class="hint">Example: S, M, L, XL. Stock quantities below are saved separately for each size.</span>
 </label>
 
-<h3 class="section-title">Stock quantity per size</h3>
+<h3 class="section-title">Stock quantity per size (legacy / no-colour items)</h3>
 <p class="hint">Set 0 when a size is unavailable. Customers should only be able to choose sizes with stock above zero.</p>
-<div id="stockEditor" class="stock-grid"></div>
+<div id="stockEditor" class="stock-grid"></div><h3 class="section-title">Stock by colour + size</h3><p class="hint">Set stock separately for each combination, e.g. Black / M = 5.</p><div id="variantStockEditor" class="variant-grid"></div>
 
 <h3 class="section-title">Size chart</h3>
-<label>Size chart image URL (HTTPS)
-<input id="sizeChartImage" type="url" placeholder="https://.../size-chart.jpg">
-<span class="hint">Add an image URL if you have a size-chart picture. Leave blank if not needed.</span>
-</label>
+<label>Size chart image URL<input id="sizeChartImage" type="url" placeholder="Upload an image below or paste an HTTPS URL"></label><div id="chartDrop" class="dropzone">Drop size chart image here or <button type="button" id="chartUploadBtn">Choose image</button><input id="chartFile" type="file" accept="image/*" hidden><p class="hint">JPG, PNG, WEBP or GIF · max 5 MB</p></div>
 <img id="chartPreview" class="preview hidden" alt="Size chart preview">
 
 <label>Measurements table
@@ -65,7 +62,7 @@
 </label>
 
 <h3 class="section-title">Product details</h3>
-<label>Image URLs (one HTTPS URL per line)<textarea id="images" rows="3"></textarea></label>
+<label>Product image URLs<textarea id="images" rows="3" placeholder="Uploaded image links will appear here; one URL per line"></textarea></label><div id="imageDrop" class="dropzone">Drag and drop product photos here or <button type="button" id="imageUploadBtn">Upload photos</button><input id="imageFiles" type="file" accept="image/*" multiple hidden><p class="hint">Upload multiple product photos · JPG, PNG, WEBP or GIF · max 5 MB each</p></div><div id="imagePreviews" class="media-list"></div>
 <label>Description<textarea id="description" rows="3"></textarea></label>
 <label><input id="active" type="checkbox" checked> Visible on website</label>
 <button type="submit">Save product</button>
@@ -73,6 +70,7 @@
 </form>
 </section>
 
+<section id="orders"><h2>T-Shirt Orders</h2><p class="hint">This list uses only the separate Apparel spreadsheet. Baby Bag orders are not shown here.</p><button type="button" id="refreshOrders">Refresh Orders</button><div id="ordersList" class="orders-list"></div></section>
 <section id="reports">
 <h2>Summary Report &amp; Charts</h2>
 <div class="row">
@@ -127,14 +125,14 @@ function splitList(value){return String(value||'').split(',').map(x=>x.trim()).f
 function parseChart(value){return String(value||'').split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const a=line.split(',').map(x=>x.trim());return {size:a[0]||'',chest:a[1]||'',length:a[2]||'',waist:a[3]||'',hip:a[4]||''};}).filter(x=>x.size);}
 function chartText(rows){return (rows||[]).map(x=>[x.size,x.chest,x.length,x.waist,x.hip].join(',')).join('\n');}
 function currentStockInputs(){const result={};document.querySelectorAll('[data-stock-size]').forEach(input=>{result[input.dataset.stockSize]=input.value;});return result;}
+function currentVariantInputs(){const result={};document.querySelectorAll('[data-stock-variant]').forEach(input=>{result[input.dataset.stockVariant]=input.value;});return result;}
+function renderVariantInputs(colors,sizes,stock){const vals=stock||{};const keys=[];(colors||[]).forEach(color=>(sizes||[]).forEach(size=>keys.push({color,size,key:color+'||'+size})));$('variantStockEditor').innerHTML=keys.map(x=>'<div class="variant-cell"><small>'+esc(x.color)+' / '+esc(x.size)+'</small><input type="number" min="0" max="1000000" step="1" data-stock-variant="'+esc(x.key)+'" value="'+esc(vals[x.key]===undefined?0:vals[x.key])+'"></div>').join('')||'<p class="muted">Add colours and sizes to configure variant stock.</p>';}
 function renderStockInputs(sizes,stock){
  const values=stock||{};
  $('stockEditor').innerHTML=sizes.map(size=>'<div class="stock-cell"><label>Size '+esc(size)+'<input type="number" min="0" max="1000000" step="1" data-stock-size="'+esc(size)+'" value="'+esc(values[size]===undefined?0:values[size])+'" required></label></div>').join('')||'<p class="muted">Add sizes above to enter stock.</p>';
 }
-function sizesChanged(){
- const previous=currentStockInputs();
- renderStockInputs(splitList($('sizes').value),previous);
-}
+function sizesChanged(){const previous=currentStockInputs(),variants=currentVariantInputs();renderStockInputs(splitList($('sizes').value),previous);renderVariantInputs(splitList($('colors').value),splitList($('sizes').value),variants);}
+function variantsChanged(){renderVariantInputs(splitList($('colors').value),splitList($('sizes').value),currentVariantInputs());}
 async function refresh(){data=await call('getAdminData',session.token);draw();}
 function draw(){
  $('identity').textContent=session.email+' · '+session.role;
@@ -161,7 +159,7 @@ function newProduct(){
  $('colors').value='';$('sizes').value='S, M, L, XL, 2XL';$('images').value='';
  $('description').value='';$('active').checked=true;$('sizeChartImage').value='';
  $('sizeChartRows').value='';$('chartPreview').classList.add('hidden');
- renderStockInputs(splitList($('sizes').value),{});
+ renderStockInputs(splitList($('sizes').value),{});renderVariantInputs(splitList($('colors').value),splitList($('sizes').value),{});$('imagePreviews').innerHTML='';
  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function editProduct(product){
@@ -172,22 +170,26 @@ function editProduct(product){
  $('description').value=product.description||'';$('active').checked=product.active!==false;
  $('sizeChartImage').value=product.sizeChartImage||'';
  $('sizeChartRows').value=chartText(product.sizeChart||[]);
- renderStockInputs(product.sizes||[],product.stockBySize||{});
+ renderStockInputs(product.sizes||[],product.stockBySize||{});renderVariantInputs(product.colors||[],product.sizes||[],product.stockByVariant||{});renderImagePreviews(product.images||[]);
  previewChart();
  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
 }
+function renderImagePreviews(urls){$('imagePreviews').innerHTML=(urls||[]).map((u,i)=>'<div class="media-item"><img src="'+esc(u)+'" alt="Product image '+(i+1)+'"><button type="button" data-remove-image="'+i+'">×</button></div>').join('');}
+async function uploadOne(file){if(!file.type.startsWith('image/'))throw Error('Please choose an image file.');if(file.size>5*1024*1024)throw Error(file.name+' is larger than 5 MB.');const dataUrl=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(file);});return call('uploadApparelImage',session.token,dataUrl,file.name);}
+async function uploadImageFiles(files,target){for(const file of Array.from(files||[])){const result=await uploadOne(file);if(target==='chart'){$('sizeChartImage').value=result.url;previewChart();}else{const existing=$('images').value.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);existing.push(result.url);$('images').value=existing.join('\\n');renderImagePreviews(existing);}}}
+function bindDrop(zoneId,inputId,target,buttonId){const zone=$(zoneId),input=$(inputId);$(buttonId).onclick=()=>input.click();input.onchange=async()=>{try{await uploadImageFiles(input.files,target);}catch(e){alert(e.message||String(e));}input.value='';};['dragenter','dragover'].forEach(ev=>zone.addEventListener(ev,e=>{e.preventDefault();zone.classList.add('drag');}));['dragleave','drop'].forEach(ev=>zone.addEventListener(ev,e=>{e.preventDefault();zone.classList.remove('drag');}));zone.addEventListener('drop',async e=>{try{await uploadImageFiles(e.dataTransfer.files,target);}catch(err){alert(err.message||String(err));}});}
 function previewChart(){
  const url=$('sizeChartImage').value.trim(),img=$('chartPreview');
  if(/^https:\/\//i.test(url)){img.src=url;img.classList.remove('hidden');}else{img.removeAttribute('src');img.classList.add('hidden');}
 }
 $('loginForm').onsubmit=async e=>{
  e.preventDefault();status('Signing in...');
- try{session=await call('login',$('email').value,$('password').value);await refresh();$('login').classList.add('hidden');$('app').classList.remove('hidden');status('');}
+ try{session=await call('login',$('email').value,$('password').value);await refresh();$('login').classList.add('hidden');$('app').classList.remove('hidden');status('');await loadOrders();}
  catch(error){session=null;status(error.message||String(error));}
 };
 $('tabs').onclick=e=>{const b=e.target.closest('[data-cat]');if(b){activeCategory=b.dataset.cat;clearEditor();draw();}};
 $('new').onclick=newProduct;
-$('sizes').addEventListener('input',sizesChanged);
+$('sizes').addEventListener('input',sizesChanged);$('colors').addEventListener('input',variantsChanged);bindDrop('imageDrop','imageFiles','product','imageUploadBtn');bindDrop('chartDrop','chartFile','chart','chartUploadBtn');$('imagePreviews').onclick=e=>{const b=e.target.closest('[data-remove-image]');if(!b)return;const arr=$('images').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);arr.splice(Number(b.dataset.removeImage),1);$('images').value=arr.join('\n');renderImagePreviews(arr);};
 $('sizeChartImage').addEventListener('input',previewChart);
 $('products').onclick=async e=>{
  const b=e.target.closest('button');if(!b)return;
@@ -197,12 +199,12 @@ $('products').onclick=async e=>{
 $('editor').onsubmit=async e=>{
  e.preventDefault();
  try{
-  const sizes=splitList($('sizes').value),stockBySize={};
+  const sizes=splitList($('sizes').value),stockBySize={},stockByVariant={};
   document.querySelectorAll('[data-stock-size]').forEach(input=>{stockBySize[input.dataset.stockSize]=Number(input.value);});
-  if(sizes.some(s=>!Number.isInteger(stockBySize[s])||stockBySize[s]<0))throw Error('Enter a valid whole-number stock quantity for every size.');
+  if(sizes.some(s=>!Number.isInteger(stockBySize[s])||stockBySize[s]<0))throw Error('Enter a valid whole-number stock quantity for every size.');document.querySelectorAll('[data-stock-variant]').forEach(input=>{stockByVariant[input.dataset.stockVariant]=Number(input.value);});
   data=await call('saveProduct',session.token,{
    id:$('pid').value,name:$('name').value,category:$('category').value,basePrice:$('price').value,discountPrice:$('discountPrice').value,
-   colors:splitList($('colors').value),sizes:sizes,stockBySize:stockBySize,
+   colors:splitList($('colors').value),sizes:sizes,stockBySize:stockBySize,stockByVariant:stockByVariant,
    images:$('images').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),
    description:$('description').value,active:$('active').checked,
    sizeChartImage:$('sizeChartImage').value.trim(),sizeChart:parseChart($('sizeChartRows').value)
@@ -211,6 +213,9 @@ $('editor').onsubmit=async e=>{
  }catch(error){alert(error.message||String(error));}
 };
 $('cancel').onclick=clearEditor;
+async function loadOrders(){const list=await call('getApparelOrders',session.token);$('ordersList').innerHTML=list.map(o=>'<article class="order-card"><strong>'+esc(o.id)+'</strong> · '+esc(new Date(o.createdAt).toLocaleString())+'<p>'+esc(o.customer)+' · '+esc(o.phone)+'</p><p>'+esc(o.items.map(i=>i.name+' / '+i.color+' / '+i.size+' × '+i.qty).join(', '))+'</p><p>'+esc(o.address)+'</p><strong>LKR '+Number(o.total).toLocaleString()+'</strong> · '+esc(o.paymentStatus)+'<div class="row"><label>Order status<select data-order-status="'+esc(o.id)+'">'+['Pending','Confirmed','Processing','Dispatched','Completed','Cancelled'].map(s=>'<option '+(s===o.status?'selected':'')+'>'+s+'</option>').join('')+'</select></label><div style="align-self:end"><button type="button" data-save-order="'+esc(o.id)+'">Save status</button></div></div></article>').join('')||'<p class="muted">No T-Shirt orders yet.</p>';}
+$('refreshOrders').onclick=async()=>{try{await loadOrders();}catch(e){alert(e.message||String(e));}};
+$('ordersList').onclick=async e=>{const b=e.target.closest('[data-save-order]');if(!b)return;const id=b.dataset.saveOrder,status=$('ordersList').querySelector('[data-order-status="'+CSS.escape(id)+'"]').value;try{await call('updateApparelOrder',session.token,id,status);alert('Order status updated.');await loadOrders();}catch(err){alert(err.message||String(err));}};
 $('categoryForm').onsubmit=async e=>{e.preventDefault();try{const name=$('newCategory').value.trim();data=await call('addCategory',session.token,name);activeCategory=name;$('newCategory').value='';draw();}catch(error){alert(error.message||String(error));}};
 $('categoryManager').onclick=async e=>{
  const b=e.target.closest('button');if(!b)return;
