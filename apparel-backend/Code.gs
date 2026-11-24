@@ -65,7 +65,7 @@ function saveProduct(token,p){
   if(!sizes.length)throw Error('Add at least one size.');
   const images=Array.isArray(p.images)?p.images.map(x=>String(x).trim()).filter(x=>/^https:\/\//i.test(x)).slice(0,8):[];
   const stockInput=p.stockBySize&&typeof p.stockBySize==='object'?p.stockBySize:{};
-  const s=DB_().getSheetByName('Products'),m=headerMap_(s),id=String(p.id||'').trim(),all=products_(),old=id?all.find(x=>x.id===id):null;
+  const s=DB_().getSheetByName('Products');ensureHeaders_(s,['DiscountPrice']);const m=headerMap_(s),id=String(p.id||'').trim(),all=products_(),old=id?all.find(x=>x.id===id):null;
   if(id&&!old)throw Error('Product not found.');
   if(old&&a.role!=='SUPER_ADMIN'&&!apparelStaffCategories_().includes(old.category))throw Error('Access denied.');
   const stock={};sizes.forEach(size=>{const raw=Object.prototype.hasOwnProperty.call(stockInput,size)?stockInput[size]:(old&&old.stockBySize&&old.stockBySize[size]!==undefined?old.stockBySize[size]:0);const n=Number(raw);if(!Number.isInteger(n)||n<0||n>1000000)throw Error('Stock for size '+size+' must be a whole number from 0 to 1,000,000.');stock[size]=n;});
