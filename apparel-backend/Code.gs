@@ -32,7 +32,7 @@ function migrateApparelStockAndSizeCharts_(){const s=DB_().getSheetByName('Produ
 function json_(v,f){try{return JSON.parse(v||'')}catch(e){return f;}}
 function headerMap_(sheet){const h=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];const m={};h.forEach((v,i)=>m[String(v)]=i);return m;}
 function products_(){
-  const s=DB_().getSheetByName('Products');if(s.getLastRow()<2)return [];
+  const s=DB_().getSheetByName('Products');ensureHeaders_(s,['DiscountPrice']);if(s.getLastRow()<2)return [];
   const m=headerMap_(s),rows=s.getRange(2,1,s.getLastRow()-1,s.getLastColumn()).getValues();
   return rows.map(r=>({
     id:r[m.ID],name:r[m.Name],category:r[m.Category],description:r[m.Description],
