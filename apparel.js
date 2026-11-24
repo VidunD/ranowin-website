@@ -3,7 +3,7 @@
 const APPAREL_API_URL = 'https://script.google.com/macros/s/AKfycbyiQRd5yoYKAQpYNE7vxNYUK0XmHj8S7W2toGWiecJMBnYkpJCcXZ_YuP4VOCXwdRUL/exec';
 const APPAREL_WHATSAPP = '94719692801'; // Ranowin Production WhatsApp number.
 const $ = id => document.getElementById(id);
-let products=[],selected=null,cart=[];
+let products=[],selected=null,cart=[],activeCategory='All';
 const money=n=>'LKR '+Number(n||0).toLocaleString('en-LK',{maximumFractionDigits:2});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function apiGet(){
@@ -15,9 +15,15 @@ async function apiPost(payload){
  const result=await res.json();if(!result.success)throw Error(result.error||'Apparel request failed.');return result;
 }
 function stockFor(p,color,size){const key=color+'||'+size;return p.colors&&p.colors.length?Number((p.stockByVariant||{})[key]||0):Number((p.stockBySize||{})[size]||0);}
+function renderCategories(){
+ const cats=['All',...new Set(products.map(p=>String(p.category||'Apparel').trim()).filter(Boolean).sort((a,b)=>a.localeCompare(b)))];
+ if(!cats.includes(activeCategory))activeCategory='All';
+ $('apparelCategories').innerHTML=cats.map(c=>'<button type="button" class="apparel-category '+(c===activeCategory?'active':'')+'" data-apparel-category="'+esc(c)+'" aria-pressed="'+(c===activeCategory)+'">'+esc(c)+'</button>').join('');
+}
 function renderProducts(){
- $('productGrid').innerHTML=products.map(p=>{const img=(p.images||[])[0]||'';const stock=(p.sizes||[]).reduce((sum,s)=>sum+(p.colors&&p.colors.length?p.colors.reduce((a,c)=>a+stockFor(p,c,s),0):stockFor(p,'',s)),0);
- return '<article class="apparel-card"><img src="'+esc(img)+'" alt="'+esc(p.name)+'" loading="lazy"><div class="inside"><h3>'+esc(p.name)+'</h3><p>'+esc(p.category||'Apparel')+'</p><p class="apparel-price">'+money(p.salePrice||p.basePrice)+'</p><p>'+stock+' in stock</p><button class="apparel-btn" data-product="'+esc(p.id)+'">View & order</button></div></article>';}).join('')||'<p class="apparel-notice">No apparel products available right now.</p>';
+ const visible=activeCategory==='All'?products:products.filter(p=>String(p.category||'Apparel').trim()===activeCategory);
+ $('productGrid').innerHTML=visible.map(p=>{const img=(p.images||[])[0]||'';const stock=(p.sizes||[]).reduce((sum,s)=>sum+(p.colors&&p.colors.length?p.colors.reduce((a,c)=>a+stockFor(p,c,s),0):stockFor(p,'',s)),0);
+ return '<article class="apparel-card"><img src="'+esc(img)+'" alt="'+esc(p.name)+'" loading="lazy"><div class="inside"><h3>'+esc(p.name)+'</h3><p>'+esc(p.category||'Apparel')+'</p><p class="apparel-price">'+money(p.salePrice||p.basePrice)+'</p><p>'+stock+' in stock</p><button class="apparel-btn" data-product="'+esc(p.id)+'">View & order</button></div></article>';}).join('')||'<p class="apparel-notice">No products in this category yet.</p>';
 }
 function openProduct(id){
  selected=products.find(p=>String(p.id)===String(id));if(!selected)return;
@@ -52,7 +58,7 @@ async function uploadCustomerDesigns(files){
  }
  return uploaded;
 }
-$('productGrid').onclick=e=>{const b=e.target.closest('[data-product]');if(b)openProduct(b.dataset.product);};
+$('apparelCategories').onclick=e=>{const b=e.target.closest('[data-apparel-category]');if(!b)return;activeCategory=b.dataset.apparelCategory;renderCategories();renderProducts();};\n$('productGrid').onclick=e=>{const b=e.target.closest('[data-product]');if(b)openProduct(b.dataset.product);};
 $('showCart').onclick=()=>{$('orderPanel').classList.toggle('hidden');$('orderPanel').scrollIntoView({behavior:'smooth'});};
 $('orderForm').onsubmit=async e=>{
  e.preventDefault();if(!cart.length)return alert('Your cart is empty.');
@@ -73,4 +79,4 @@ $('orderForm').onsubmit=async e=>{
  finally{button.disabled=false;}
 };
 $('year').textContent=new Date().getFullYear();
-(async()=>{try{const data=await apiGet();products=(data.products||[]).filter(p=>p.active);$('apparelStatus').classList.add('hidden');renderProducts();}catch(e){$('apparelStatus').textContent=e.message||String(e);}})();
+(async()=>{try{const data=await apiGet();products=(data.products||[]).filter(p=>p.active);$('apparelStatus').classList.add('hidden');renderCategories();renderProducts();}catch(e){$('apparelStatus').textContent=e.message||String(e);}})();
