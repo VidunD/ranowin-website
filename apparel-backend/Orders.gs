@@ -3,7 +3,7 @@
 function apparelOrdersSheet_(){
   const db=DB_();let s=db.getSheetByName('Orders');
   if(!s)s=db.insertSheet('Orders');
-  ensureHeaders_(s,['ID','CreatedAt','Customer','Phone','Address','ItemsJSON','Total','Status','DesignFilesJSON','Notes','DeliveryFee','GoodsTotal','PaymentStatus']);
+  ensureHeaders_(s,['ID','CreatedAt','Customer','Phone','Address','ItemsJSON','Total','Status','DesignFilesJSON','Notes','DeliveryFee','GoodsTotal','PaymentStatus','StockDeducted','DispatchBarcode','DispatchedAt','Manual']);
   return s;
 }
 function apparelOrderJson_(obj){return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);}
@@ -79,7 +79,7 @@ function createApparelOrder_(input){
     const id='APP-'+Utilities.formatDate(new Date(),Session.getScriptTimeZone(),'yyMMdd')+'-'+Utilities.getUuid().slice(0,6).toUpperCase();
     const total=goods+delivery,sh=apparelOrdersSheet_();
     const savedItems=normalized.map(({stockKey,...x})=>x);
-    sh.appendRow([id,new Date(),customer,phone,address,JSON.stringify(savedItems),total,'Pending',JSON.stringify(designFiles),String(input.notes||'').slice(0,500),delivery,goods,'Unpaid']);
+    sh.appendRow([id,new Date(),customer,phone,address,JSON.stringify(savedItems),total,'Pending',JSON.stringify(designFiles),String(input.notes||'').slice(0,500),delivery,goods,'Unpaid',true,'','',false]);
     return {success:true,orderId:id,total:total,goodsTotal:goods,deliveryFee:delivery,message:'T-Shirt order received.'};
   }finally{lock.releaseLock();}
 }
@@ -129,4 +129,124 @@ function uploadApparelImage(token,dataUrl,fileName){
   const blob=Utilities.newBlob(bytes,match[1],safe),file=folder.createFile(blob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
   return {url:'https://drive.google.com/uc?export=view&id='+file.getId(),fileId:file.getId(),name:file.getName()};
+}
+
+
+/* Manual order management — both SUPER_ADMIN and APPAREL_ADMIN can use this.
+   Draft orders do not reserve stock. Stock is deducted once, only on confirmation. */
+function createManualApparelOrder(token,input){
+  const actor=auth_(token); input=input||{};
+  const customer=String(input.customer||'').trim(),phone=String(input.phone||'').trim(),address=String(input.address||'').trim();
+  const delivery=Number(input.deliveryFee||0),items=Array.isArray(input.items)?input.items:[];
+  if(!customer||customer.length>120)throw Error('Enter a customer name (max 120 characters).');
+  if(!phone||phone.length>40)throw Error('Enter a valid phone number.');
+  if(!address||address.length>1000)throw Error('Enter a delivery address.');
+  if(!items.length||items.length>30)throw Error('Add at least one order item.');
+  if(!Number.isFinite(delivery)||delivery<0||delivery>100000)throw Error('Invalid delivery fee.');
+  const allowed=actor.role==='SUPER_ADMIN'?categoryNames_():apparelStaffCategories_();
+  const products=products_(),byId={};products.forEach(p=>byId[String(p.id)]=p);
+  let goods=0;
+  const normalized=items.map(it=>{
+    const p=byId[String(it.productId||'')];if(!p||!p.active)throw Error('Selected product is unavailable.');
+    if(!allowed.includes(p.category))throw Error('You do not have permission to order from '+p.category+'.');
+    const color=String(it.color||'').trim(),size=String(it.size||'').trim(),qty=Number(it.qty),unit=Number(it.unitPrice);
+    if(!p.sizes.includes(size)||!Number.isInteger(qty)||qty<1||qty>100)throw Error('Check size and quantity for '+p.name+'.');
+    if(p.colors.length&&!p.colors.includes(color))throw Error('Choose a valid colour for '+p.name+'.');
+    if(!p.colors.length&&color)throw Error('This product does not use colour variants.');
+    if(!Number.isFinite(unit)||unit<0||unit>10000000)throw Error('Invalid unit price for '+p.name+'.');
+    const line=unit*qty;goods+=line;
+    return {productId:p.id,name:p.name,color,size,qty,unitPrice:unit,lineTotal:line,
+      printMethod:String(it.printMethod||'No print').slice(0,80),
+      printPlacement:String(it.printPlacement||'Not applicable').slice(0,100),
+      neckLabel:String(it.neckLabel||'Keep existing label').slice(0,100),
+      customInstructions:String(it.customInstructions||'').slice(0,1000)};
+  });
+  const id='APP-'+Utilities.formatDate(new Date(),Session.getScriptTimeZone(),'yyMMdd')+'-'+Utilities.getUuid().slice(0,6).toUpperCase();
+  const total=goods+delivery,s=apparelOrdersSheet_();
+  s.appendRow([id,new Date(),customer,phone,address,JSON.stringify(normalized),total,'Draft','[]',String(input.notes||'').slice(0,500),delivery,goods,'Unpaid',false,'','',true]);
+  return {success:true,orderId:id,total,goodsTotal:goods,deliveryFee:delivery,status:'Draft'};
+}
+function confirmManualApparelOrder(token,id){
+  auth_(token);id=String(id||'').trim();
+  const lock=LockService.getScriptLock();lock.waitLock(15000);
+  try{
+    const s=apparelOrdersSheet_(),m=headerMap_(s),n=s.getLastRow(),rows=n>1?s.getRange(2,1,n-1,s.getLastColumn()).getValues():[];
+    const ix=rows.findIndex(r=>String(r[m.ID])===id);if(ix<0)throw Error('Order not found.');
+    const row=rows[ix],status=String(row[m.Status]||'Draft');
+    if(status!=='Draft')throw Error('Only draft orders can be confirmed.');
+    if(row[m.StockDeducted]===true)throw Error('Stock was already deducted for this order.');
+    const items=json_(row[m.ItemsJSON],[]),all=products_(),byId={};all.forEach(p=>byId[String(p.id)]=p);
+    const demand={};
+    items.forEach(it=>{
+      const p=byId[String(it.productId)];if(!p||!p.active)throw Error('A product in this order is no longer available.');
+      const key=p.colors.length?String(it.color||'')+'||'+String(it.size||''):String(it.size||'');
+      const group=String(p.id)+'::'+key;demand[group]=(demand[group]||0)+Number(it.qty||0);
+    });
+    Object.keys(demand).forEach(group=>{
+      const parts=group.split('::'),p=byId[parts[0]],map=p.colors.length?p.stockByVariant:p.stockBySize,available=Number(map[parts[1]]||0);
+      if(available<demand[group])throw Error(p.name+' ('+parts[1].replace('||',' / ')+') has only '+available+' in stock.');
+    });
+    const ps=DB_().getSheetByName('Products'),pm=headerMap_(ps);
+    Object.keys(demand).forEach(group=>{
+      const parts=group.split('::'),p=byId[parts[0]],map=p.colors.length?p.stockByVariant:p.stockBySize;
+      map[parts[1]]=Number(map[parts[1]]||0)-demand[group];
+      const productIndex=all.findIndex(x=>String(x.id)===String(p.id)),col=p.colors.length?pm.VariantStockJSON:pm.StockJSON;
+      ps.getRange(productIndex+2,col+1).setValue(JSON.stringify(map));
+    });
+    s.getRange(ix+2,m.Status+1).setValue('Confirmed');
+    s.getRange(ix+2,m.StockDeducted+1).setValue(true);
+    return {success:true,status:'Confirmed'};
+  }finally{lock.releaseLock();}
+}
+function deleteManualApparelDraft(token,id){
+  auth_(token);id=String(id||'').trim();
+  const s=apparelOrdersSheet_(),m=headerMap_(s),n=s.getLastRow();
+  if(n<2)throw Error('Order not found.');
+  const rows=s.getRange(2,1,n-1,s.getLastColumn()).getValues(),ix=rows.findIndex(r=>String(r[m.ID])===id);
+  if(ix<0)throw Error('Order not found.');
+  const row=rows[ix];
+  if(row[m.Manual]!==true||String(row[m.Status])!=='Draft')throw Error('Only manual draft orders can be deleted.');
+  if(row[m.StockDeducted]===true)throw Error('This order has deducted stock and cannot be deleted.');
+  s.deleteRow(ix+2);return {success:true};
+}
+function setApparelDispatchInfo(token,id,barcode){
+  auth_(token);id=String(id||'').trim();barcode=String(barcode||'').trim().slice(0,100);
+  if(!barcode)throw Error('Enter the postal barcode number.');
+  const s=apparelOrdersSheet_(),m=headerMap_(s),n=s.getLastRow(),rows=n>1?s.getRange(2,1,n-1,s.getLastColumn()).getValues():[];
+  const ix=rows.findIndex(r=>String(r[m.ID])===id);if(ix<0)throw Error('Order not found.');
+  const status=String(rows[ix][m.Status]||'');
+  if(status!=='Confirmed'&&status!=='Processing'&&status!=='Dispatched')throw Error('Confirm the order before dispatch.');
+  s.getRange(ix+2,m.DispatchBarcode+1).setValue(barcode);
+  s.getRange(ix+2,m.DispatchedAt+1).setValue(new Date());
+  s.getRange(ix+2,m.Status+1).setValue('Dispatched');
+  return {success:true,status:'Dispatched'};
+}
+/* Override status handler to restore stock only when stock was actually deducted. */
+function updateApparelOrder(token,id,status){
+  auth_(token);id=String(id||'').trim();status=String(status||'').trim();
+  const allowed=['Draft','Pending','Confirmed','Processing','Dispatched','Completed','Cancelled'];
+  if(!allowed.includes(status))throw Error('Invalid order status.');
+  const lock=LockService.getScriptLock();lock.waitLock(15000);
+  try{
+    const s=apparelOrdersSheet_(),m=headerMap_(s),n=s.getLastRow();if(n<2)throw Error('Order not found.');
+    const rows=s.getRange(2,1,n-1,s.getLastColumn()).getValues(),ix=rows.findIndex(r=>String(r[m.ID])===id);
+    if(ix<0)throw Error('Order not found.');
+    const row=rows[ix],previous=String(row[m.Status]||'Pending');
+    if(previous==='Cancelled'&&status!=='Cancelled')throw Error('Cancelled orders cannot be reopened. Create a new order instead.');
+    if(previous==='Draft'&&status!=='Draft'&&status!=='Cancelled')throw Error('Use Confirm Order to deduct stock safely.');
+    if(status==='Cancelled'&&previous!=='Cancelled'){
+      const marker=m.StockDeducted!==undefined?row[m.StockDeducted]:undefined;
+      const deducted=marker===true||(marker===''||marker===undefined)&&previous!=='Draft';
+      if(deducted){
+        const items=json_(row[m.ItemsJSON],[]),ps=DB_().getSheetByName('Products'),all=products_(),byId={};all.forEach(p=>byId[String(p.id)]=p);
+        const restore={};
+        items.forEach(it=>{const p=byId[String(it.productId||'')];if(!p)return;const key=p.colors.length?String(it.color||'')+'||'+String(it.size||''):String(it.size||'');const group=String(p.id)+'::'+key;restore[group]=(restore[group]||0)+Number(it.qty||0);});
+        const pm=headerMap_(ps);
+        Object.keys(restore).forEach(group=>{const parts=group.split('::'),p=byId[parts[0]];if(!p)return;const map=p.colors.length?p.stockByVariant:p.stockBySize;map[parts[1]]=Number(map[parts[1]]||0)+restore[group];const pi=all.findIndex(x=>String(x.id)===String(p.id)),col=p.colors.length?pm.VariantStockJSON:pm.StockJSON;ps.getRange(pi+2,col+1).setValue(JSON.stringify(map));});
+        if(m.StockDeducted!==undefined)s.getRange(ix+2,m.StockDeducted+1).setValue(false);
+      }
+    }
+    s.getRange(ix+2,m.Status+1).setValue(status);
+    return {success:true,status};
+  }finally{lock.releaseLock();}
 }
