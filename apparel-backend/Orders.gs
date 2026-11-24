@@ -87,7 +87,7 @@ function getApparelOrders(token){
   auth_(token);const s=apparelOrdersSheet_(),rows=apparelRowsAsObjects_(s);
   return rows.reverse().map(o=>({id:String(o.ID||''),createdAt:o.CreatedAt,customer:o.Customer,phone:o.Phone,address:o.Address,
     items:json_(o.ItemsJSON,[]),designFiles:json_(o.DesignFilesJSON,[]),total:Number(o.Total)||0,goodsTotal:Number(o.GoodsTotal)||Number(o.Total)||0,
-    deliveryFee:Number(o.DeliveryFee)||0,status:String(o.Status||'Pending'),paymentStatus:String(o.PaymentStatus||'Unpaid'),notes:o.Notes||''}));
+    deliveryFee:Number(o.DeliveryFee)||0,status:String(o.Status||'Pending'),paymentStatus:String(o.PaymentStatus||'Unpaid'),notes:o.Notes||'',dispatchBarcode:String(o.DispatchBarcode||''),manual:o.Manual===true}));
 }
 function updateApparelOrder(token,id,status){
   auth_(token);id=String(id||'').trim();status=String(status||'').trim();
