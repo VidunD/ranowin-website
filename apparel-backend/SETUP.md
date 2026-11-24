@@ -51,6 +51,12 @@ The public read-only catalogue endpoint is /exec?action=catalog. It returns acti
 - Public catalogue reads are read-only. Order submission validates product, colour, size and available stock on the server, then reserves stock and appends the order to the Apparel Orders sheet.
 - Admin can view T-Shirt orders and update their status. Payment records and monthly reports remain in the Apparel spreadsheet.
 
+## Manual orders in both Admin roles
+
+The Apparel Admin page now provides **+ New Manual Order** to both Super Admin and normal Apparel Admin accounts. It saves orders to the separate Apparel Orders sheet as Drafts, supports multiple products/colours/sizes, quantities, custom print method/placement, neck-label instructions, customer details, delivery fee and notes. Drafts can be printed as a bill or delivery label and deleted before confirmation. Press **Confirm Order & Deduct Stock** to validate current stock and deduct it once. The order card also supports status updates and saving the postal barcode to mark an order Dispatched. Both roles use the same form; normal Admin access remains limited to its allowed Apparel categories.
+
+For an existing Apps Script project, replace **Orders.gs** and **Admin.html** with the latest repository versions, then deploy using **Deploy → Manage deployments → Edit → New version → Deploy**. Do not run setupApparel_ again. The Orders sheet automatically receives the additional order-management columns when the admin loads orders.
+
 ## 7. Summary reports and Google Drive backups
 Add the new **Reports.gs** file from this folder to the same Apps Script project. It is a separate module and does not replace Code.gs.
 
