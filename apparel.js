@@ -3,7 +3,7 @@
 const APPAREL_API_URL = 'https://script.google.com/macros/s/AKfycbyiQRd5yoYKAQpYNE7vxNYUK0XmHj8S7W2toGWiecJMBnYkpJCcXZ_YuP4VOCXwdRUL/exec';
 const APPAREL_WHATSAPP = '94719692801'; // Ranowin Production WhatsApp number.
 const $ = id => document.getElementById(id);
-let products=[],selected=null,cart=[],activeCategory='All';
+let products=[],catalogCategories=[],selected=null,cart=[],activeCategory='All';
 const money=n=>'LKR '+Number(n||0).toLocaleString('en-LK',{maximumFractionDigits:2});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function apiGet(){
@@ -16,7 +16,7 @@ async function apiPost(payload){
 }
 function stockFor(p,color,size){const key=color+'||'+size;return p.colors&&p.colors.length?Number((p.stockByVariant||{})[key]||0):Number((p.stockBySize||{})[size]||0);}
 function renderCategories(){
- const cats=['All',...new Set(products.map(p=>String(p.category||'Apparel').trim()).filter(Boolean).sort((a,b)=>a.localeCompare(b)))];
+ const cats=['All',...new Set([...catalogCategories,...products.map(p=>String(p.category||'Apparel').trim())].filter(Boolean).sort((a,b)=>a.localeCompare(b)))];
  if(!cats.includes(activeCategory))activeCategory='All';
  $('apparelCategories').innerHTML=cats.map(c=>'<button type="button" class="apparel-category '+(c===activeCategory?'active':'')+'" data-apparel-category="'+esc(c)+'" aria-pressed="'+(c===activeCategory)+'">'+esc(c)+'</button>').join('');
 }
@@ -79,4 +79,4 @@ $('orderForm').onsubmit=async e=>{
  finally{button.disabled=false;}
 };
 $('year').textContent=new Date().getFullYear();
-(async()=>{try{const data=await apiGet();products=(data.products||[]).filter(p=>p.active);$('apparelStatus').classList.add('hidden');renderCategories();renderProducts();}catch(e){$('apparelStatus').textContent=e.message||String(e);}})();
+(async()=>{try{const data=await apiGet();products=(data.products||[]).filter(p=>p.active);catalogCategories=Array.isArray(data.categories)?data.categories:[];$('apparelStatus').classList.add('hidden');renderCategories();renderProducts();}catch(e){$('apparelStatus').textContent=e.message||String(e);}})();
