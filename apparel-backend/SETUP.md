@@ -83,3 +83,15 @@ After adding Reports.gs and updating Admin.html, deploy the web app with **Deplo
 6. GitHub Pages will publish the separate **apparel.html** page. The main website has an Apparel navigation link.
 
 The new order endpoint is POST to the same /exec URL with action=createOrder. Orders are stored only in the Apparel spreadsheet. Re-deploy the Apps Script web app using **Manage deployments → Edit → New version → Deploy** after changing Apps Script files.
+## 9. Customer custom T-Shirt orders and WhatsApp
+
+The Apparel storefront supports per-item customization:
+- Printing method: no print, DTF, embroidery, or custom design discussion
+- Placement: left/right chest, centre front, back, front and back, sleeve, or custom placement
+- Back neck label: keep existing, custom woven brand label, printed neck label, remove, or discuss
+- Free-text design and label instructions
+- Up to 3 customer artwork/logo images per order (JPG, PNG, WEBP or GIF; 3 MB each)
+
+When a customer submits an order, the image files are uploaded to the separate Apparel Google Drive folder, then the order and Drive links are saved in the Apparel Orders sheet. The site opens a pre-filled WhatsApp message to the existing Ranowin Production number +94 71 969 2801. The customer must still tap Send in WhatsApp. The Admin order card displays the custom specifications and links to uploaded artwork.
+
+The public customer upload endpoint is separate from the authenticated Admin product-image uploader. It accepts only the listed image formats and enforces the 3 MB per-file limit. The first customer upload creates a Drive folder named Ranowin Apparel Customer Designs and asks the Apps Script owner to authorize Drive access. Re-deploy the Apps Script web app as a new version after updating Orders.gs and Admin.html.
