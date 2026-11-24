@@ -20,7 +20,7 @@ function setupApparel_(){
   if(!superEmail||!superPass||superPass.length<16)throw Error('Set SUPER_ADMIN_EMAIL and a 16+ character SUPER_ADMIN_PASSWORD first.');
   if(!staffPass||staffPass.length<16)throw Error('Set APPAREL_ADMIN_PASSWORD to a unique 16+ character password first.');
   const db=DB_();
-  const specs={Settings:['Key','Value'],Products:['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON'],Orders:['ID','CreatedAt','Customer','Phone','Address','ItemsJSON','Total','Status','DesignFilesJSON','Notes'],Categories:['Name','Active'],Users:['Email','Role','Salt','PasswordHash','Active']};
+  const specs={Settings:['Key','Value'],Products:['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON','DiscountPrice'],Orders:['ID','CreatedAt','Customer','Phone','Address','ItemsJSON','Total','Status','DesignFilesJSON','Notes'],Categories:['Name','Active'],Users:['Email','Role','Salt','PasswordHash','Active']};
   Object.keys(specs).forEach(n=>{let s=db.getSheetByName(n);if(!s)s=db.insertSheet(n);ensureHeaders_(s,specs[n]);});
   const c=db.getSheetByName('Categories');if(c.getLastRow()===1)['T-Shirts','Hoodies','Shorts','Sports Bottoms','Caps'].forEach(x=>c.appendRow([x,true]));
   const u=db.getSheetByName('Users'),rows=u.getLastRow()>1?u.getRange(2,1,u.getLastRow()-1,5).getValues():[];
@@ -37,7 +37,7 @@ function products_(){
   return rows.map(r=>({
     id:r[m.ID],name:r[m.Name],category:r[m.Category],description:r[m.Description],
     images:json_(r[m.ImagesJSON],[]),colors:json_(r[m.ColorsJSON],[]),sizes:json_(r[m.SizesJSON],['S','M','L','XL','2XL']),
-    basePrice:Number(r[m.BasePrice])||0,active:r[m.Active]===true,createdAt:r[m.CreatedAt],updatedAt:r[m.UpdatedAt],
+    basePrice:Number(r[m.BasePrice])||0,discountPrice:r[m.DiscountPrice]===''||r[m.DiscountPrice]===undefined?null:Number(r[m.DiscountPrice]),active:r[m.Active]===true,createdAt:r[m.CreatedAt],updatedAt:r[m.UpdatedAt],
     stockBySize:json_(r[m.StockJSON],{}),sizeChartImage:String(r[m.SizeChartImage]||''),sizeChart:json_(r[m.SizeChartJSON],[])
   })).filter(p=>p.id);
 }
@@ -59,7 +59,7 @@ function saveProduct(token,p){
   if(!name||name.length>120)throw Error('Enter a product name (max 120 characters).');
   if(!categoryNames_().includes(cat))throw Error('Unknown category.');
   if(a.role!=='SUPER_ADMIN'&&!apparelStaffCategories_().includes(cat))throw Error('You cannot manage this category.');
-  const price=Number(p.basePrice);if(!Number.isFinite(price)||price<0||price>10000000)throw Error('Invalid base price.');
+  const price=Number(p.basePrice);if(!Number.isFinite(price)||price<0||price>10000000)throw Error('Invalid base price.');const discountRaw=p.discountPrice===''||p.discountPrice===null||p.discountPrice===undefined?null:Number(p.discountPrice);if(discountRaw!==null&&(!Number.isFinite(discountRaw)||discountRaw<0||discountRaw>=price))throw Error('Discount price must be lower than the original price.');
   const colors=Array.isArray(p.colors)?p.colors.map(x=>String(x).trim()).filter(Boolean).slice(0,40):[];
   const sizes=Array.isArray(p.sizes)?Array.from(new Set(p.sizes.map(x=>String(x).trim()).filter(Boolean))).slice(0,40):[];
   if(!sizes.length)throw Error('Add at least one size.');
@@ -73,7 +73,7 @@ function saveProduct(token,p){
   const chart=Array.isArray(p.sizeChart)?p.sizeChart.slice(0,40).map(x=>({size:String(x.size||'').trim(),chest:String(x.chest||'').trim(),length:String(x.length||'').trim(),waist:String(x.waist||'').trim(),hip:String(x.hip||'').trim()})).filter(x=>x.size):[];
   const now=new Date().toISOString(),record={
     ID:id||'AP-'+Utilities.getUuid().slice(0,8).toUpperCase(),Name:name,Category:cat,Description:String(p.description||'').slice(0,2000),
-    ImagesJSON:JSON.stringify(images),ColorsJSON:JSON.stringify(colors),SizesJSON:JSON.stringify(sizes),BasePrice:price,Active:p.active!==false,
+    ImagesJSON:JSON.stringify(images),ColorsJSON:JSON.stringify(colors),SizesJSON:JSON.stringify(sizes),BasePrice:price,DiscountPrice:discountRaw===null?'':discountRaw,Active:p.active!==false,
     CreatedAt:old?old.createdAt:now,UpdatedAt:now,StockJSON:JSON.stringify(stock),SizeChartImage:chartImage,SizeChartJSON:JSON.stringify(chart)
   };
   const row=new Array(s.getLastColumn()).fill('');Object.keys(record).forEach(k=>{if(m[k]!==undefined)row[m[k]]=record[k];});
