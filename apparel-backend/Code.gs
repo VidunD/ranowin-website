@@ -28,7 +28,7 @@ function setupApparel_(){
   p.deleteProperty('SUPER_ADMIN_PASSWORD');p.deleteProperty('APPAREL_ADMIN_PASSWORD');
   return 'Setup complete. Existing product rows were preserved; stock and size-chart columns are ready.';
 }
-function migrateApparelStockAndSizeCharts_(){const s=DB_().getSheetByName('Products');if(!s)throw Error('Products sheet not found. Run setupApparel_ first.');ensureHeaders_(s,['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON']);return 'Migration complete. Existing products preserved; StockJSON, SizeChartImage and SizeChartJSON columns are ready.';}
+function migrateApparelStockAndSizeCharts_(){const s=DB_().getSheetByName('Products');if(!s)throw Error('Products sheet not found. Run setupApparel_ first.');ensureHeaders_(s,['ID','Name','Category','Description','ImagesJSON','ColorsJSON','SizesJSON','BasePrice','Active','CreatedAt','UpdatedAt','StockJSON','SizeChartImage','SizeChartJSON','DiscountPrice']);return 'Migration complete. Existing products preserved; StockJSON, SizeChartImage and SizeChartJSON columns are ready.';}
 function json_(v,f){try{return JSON.parse(v||'')}catch(e){return f;}}
 function headerMap_(sheet){const h=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];const m={};h.forEach((v,i)=>m[String(v)]=i);return m;}
 function products_(){
@@ -37,7 +37,7 @@ function products_(){
   return rows.map(r=>({
     id:r[m.ID],name:r[m.Name],category:r[m.Category],description:r[m.Description],
     images:json_(r[m.ImagesJSON],[]),colors:json_(r[m.ColorsJSON],[]),sizes:json_(r[m.SizesJSON],['S','M','L','XL','2XL']),
-    basePrice:Number(r[m.BasePrice])||0,discountPrice:r[m.DiscountPrice]===''||r[m.DiscountPrice]===undefined?null:Number(r[m.DiscountPrice]),active:r[m.Active]===true,createdAt:r[m.CreatedAt],updatedAt:r[m.UpdatedAt],
+    basePrice:Number(r[m.BasePrice])||0,discountPrice:r[m.DiscountPrice]===''||r[m.DiscountPrice]===undefined?null:Number(r[m.DiscountPrice]),salePrice:r[m.DiscountPrice]!==''&&r[m.DiscountPrice]!==undefined&&Number(r[m.DiscountPrice])>=0&&Number(r[m.DiscountPrice])<Number(r[m.BasePrice])?Number(r[m.DiscountPrice]):Number(r[m.BasePrice])||0,active:r[m.Active]===true,createdAt:r[m.CreatedAt],updatedAt:r[m.UpdatedAt],
     stockBySize:json_(r[m.StockJSON],{}),sizeChartImage:String(r[m.SizeChartImage]||''),sizeChart:json_(r[m.SizeChartJSON],[])
   })).filter(p=>p.id);
 }
