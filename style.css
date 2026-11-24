@@ -48,3 +48,6 @@ header .brand small{color:#eee4ff}.language-bar{display:flex;align-items:center;
 
 /* Compact cart action beside the primary WhatsApp button. */
 .order-actions{display:flex;align-items:stretch;gap:10px;margin-top:12px}.order-actions>.btn{margin-top:0;width:auto;min-height:48px}.order-actions>button[type="submit"]{flex:1;min-width:0}.order-actions>.cart-add-icon{flex:0 0 52px;padding:8px;font-size:23px;background:white;border-color:var(--line)}#cartAddStatus{margin:10px 0 0}
+
+/* Discount pricing */
+.price-stack{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px;vertical-align:middle;line-height:1.2}.old-price{font-size:.78em;color:#777;font-weight:500}.sale-price{font-size:1.12em;color:#b4233b;font-weight:800}.saved-price{font-size:.72em;color:#28734b;font-weight:650}.detail .price-stack{align-items:flex-start}.detail .sale-price{font-size:1.35em}.card .price-stack{float:right}
