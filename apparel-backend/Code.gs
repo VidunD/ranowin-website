@@ -5,7 +5,7 @@ function DB_(){const id=String(P_().getProperty('APPAREL_SHEET_ID')||'').trim();
 function doGet(e){
   if(e&&e.parameter&&e.parameter.action==='catalog'){
     const products=products_().filter(p=>p.active);
-    return ContentService.createTextOutput(JSON.stringify({version:2,products:products})).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({version:2,categories:categoryNames_(),products:products})).setMimeType(ContentService.MimeType.JSON);
   }
   return HtmlService.createHtmlOutputFromFile('Admin').setTitle('Ranowin Apparel Admin').addMetaTag('viewport','width=device-width,initial-scale=1');
 }
