@@ -43,16 +43,3 @@ JavaScript syntax and CSV/data normalisation checks passed, including quoted com
 The Home page language selector controls navigation, descriptions and checkout labels across the site. English, Sinhala and Tamil are supported, and the choice persists when local storage is available. There is no language selector inside product details. The theme uses pale blue, purple with white lettering, and pale red accents. The About page credits Vidun Damsana with telephone 075 132 8199; business orders continue to use the existing Ranowin WhatsApp number.
 
 Validation: current published CSV parsed successfully with 15 products; relative and GitHub image links, Sinhala/Tamil labels, fixed-size details, removal of detail language control, colour/pattern reset and generated WhatsApp order details checked with a simulated DOM. Visual browser verification remains to be completed.
-
-
-## Android app installation
-
-Ranowin Production is also configured as an installable Progressive Web App (PWA). It uses the same live website, product feed, WhatsApp checkout and existing backend; it does not create a second product database or payment system.
-
-After GitHub Pages publishes the latest commit:
-1. Open https://ranowin.com.lk/ in Chrome on Android.
-2. Wait for the page to finish loading.
-3. Tap the **Install** prompt if it appears, or open Chrome's menu (⋮) and choose **Install app** / **Add to Home screen**.
-4. Open **Ranowin** from the Android home screen.
-
-The service worker caches the app shell for faster repeat loading and a basic offline fallback. Live stock data is deliberately fetched from the network, so offline mode does not promise current stock or checkout. This PWA is not a standalone APK and is not automatically published to Google Play.
