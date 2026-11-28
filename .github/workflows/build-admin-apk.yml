@@ -10,19 +10,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        id: checkout
       - uses: actions/setup-java@v5
+        id: java
         with:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        id: android
       - name: Install Android SDK parts
-        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
+        id: sdk
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
       - uses: gradle/actions/setup-gradle@v4
+        id: gradle
         with:
           gradle-version: '8.9'
       - name: Build debug APK
+        id: build
         working-directory: android-admin
-        run: gradle --no-daemon assembleDebug --stacktrace
+        run: |
+          set +e
+          gradle --no-daemon assembleDebug --stacktrace > "$GITHUB_WORKSPACE/build.log" 2>&1
+          code=$?
+          tail -n 40 "$GITHUB_WORKSPACE/build.log"
+          exit $code
+      - name: Show why it failed
+        if: failure()
+        run: |
+          echo "::error title=Step results::checkout=${{ steps.checkout.outcome }} java=${{ steps.java.outcome }} android=${{ steps.android.outcome }} sdk=${{ steps.sdk.outcome }} gradle=${{ steps.gradle.outcome }} build=${{ steps.build.outcome }}"
+          if [ -f build.log ]; then
+            MSG=$(grep -E "error:|What went wrong|Caused by|Could not|not found|FAILURE" -A2 build.log | head -20 | sed 's/%/%25/g' | tr '\n' ' ' | cut -c1-3000)
+            echo "::error title=Gradle message::$MSG"
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: Ranowin-Admin-APK
