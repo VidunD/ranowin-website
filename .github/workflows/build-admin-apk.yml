@@ -18,6 +18,8 @@ jobs:
           java-version: '17'
       - uses: android-actions/setup-android@v3
         id: android
+        with:
+          packages: ''
       - name: Install Android SDK parts
         id: sdk
         run: |
